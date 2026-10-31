@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Route, Users, ArrowLeft } from "lucide-react";
+import { MapPin, Route, Users, ArrowLeft } from "lucide-react";
 import { getLevel } from "../../constants/levels";
 import { getStatus } from "../../constants/statuses";
 
@@ -18,31 +18,32 @@ export default function RideCard({ ride }) {
   return (
     <Link
       to={`/rides/${ride.id}`}
-      className="group relative block overflow-hidden rounded-3xl border border-white/10 bg-black"
+      className="group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0c0c0e] shadow-lg transition-all duration-300 hover:border-white/20 hover:shadow-xl"
     >
-      <div className="relative aspect-4/3 sm:aspect-16/10">
+      {/* ═══ الجزء العلوي: الصورة ═══ */}
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden">
         <img
-    src={imgFor(ride)}
-    alt={ride.title}
-    width={600}
-    height={400}
-    loading="lazy"
-    decoding="async"
-    className="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105"
-  />
+          src={imgFor(ride)}
+          alt={ride.title}
+          width={600}
+          height={400}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105"
+        />
 
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-black/10" />
-        <div className="absolute inset-0 bg-linear-to-l from-black/90 via-black/40 to-transparent" />
+        {/* تدرج لدمج الصورة مع الخلفية */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-[#0c0c0e]/20 to-transparent" />
 
-        {/* التاريخ */}
-        <div className="absolute end-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-[#F9EA02]/40 bg-black/60 px-2.5 py-1 backdrop-blur-md">
-          <span className="size-1 rounded-full bg-[#F9EA02]" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-[#F9EA02]">
+        {/* شارة "الرحلة القادمة" (أو التاريخ) */}
+        <div className="absolute end-4 top-4 inline-flex items-center gap-2 rounded-full border border-[#F9EA02]/40 bg-black/60 px-3 py-1 backdrop-blur-md">
+          <span className="size-1.5 rounded-full bg-[#F9EA02]" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#F9EA02]">
             {ride.rideDateDisplay}
           </span>
         </div>
 
-        {/* الحالة */}
+        {/* حالة الرحلة */}
         <div className="absolute start-4 top-4">
           <span
             className={`rounded-full px-2.5 py-1 text-[10px] font-black backdrop-blur-md ${status.bg} ${status.text}`}
@@ -50,45 +51,62 @@ export default function RideCard({ ride }) {
             {ride.status}
           </span>
         </div>
+      </div>
 
-        {/* المحتوى السفلي */}
-        <div className="absolute inset-x-0 bottom-0 p-4">
-          <div className="space-y-2">
-            <h3 className="line-clamp-2 text-base font-black leading-snug tracking-tight text-white sm:text-lg">
-              {ride.title}
-            </h3>
-
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[10px]">
-              <span className="flex items-center gap-1">
-                <Route size={12} strokeWidth={2.5} className="text-white/40" />
-                <span dir="ltr" className="font-mono font-black text-white">
-                  {ride.distanceKM}km
-                </span>
-              </span>
-              <span className="text-white/20">·</span>
-              <span className="flex items-center gap-1">
-                <Users size={12} strokeWidth={2.5} className="text-white/40" />
-                <span dir="ltr" className="font-mono font-black text-white">
-                  {ride.currentParticipants}/{ride.maxParticipants}
-                </span>
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 pt-2">
-              {status.canBook && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F9EA02] px-3.5 py-1.5 text-[11px] font-black text-black transition group-hover:bg-[#F9EA02]/90">
-                  احجز
-                  <ArrowLeft size={12} strokeWidth={2.5} className="transition group-hover:-translate-x-0.5" />
-                </span>
-              )}
-
-              <span
-                className={`${status.canBook ? "ms-auto" : ""} inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-black text-white ${level.bg}`}
-              >
-                {level.label}
-              </span>
-            </div>
+      {/* ═══ الجزء السفلي: المحتوى ═══ */}
+      <div className="relative flex w-full flex-1 flex-col justify-between p-4 sm:p-5">
+        <div className="space-y-3">
+          
+          {/* الموقع والتاريخ */}
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#F9EA02]">
+            <MapPin size={12} strokeWidth={2.5} className="shrink-0" />
+            <span className="truncate">{ride.path || "مسار غير محدد"}</span>
           </div>
+
+          {/* العنوان */}
+          <h3 className="line-clamp-2 text-base font-black leading-tight tracking-tight text-white sm:text-lg">
+            {ride.title}
+          </h3>
+
+          {/* المسافة والمشاركين والمستوى */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+            <div className="flex items-center gap-1">
+              <Route size={14} strokeWidth={2.5} className="text-white/40" />
+              <span dir="ltr" className="font-mono text-[11px] font-black text-white">
+                {ride.distanceKM}km
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Users size={14} strokeWidth={2.5} className="text-white/40" />
+              <span dir="ltr" className="font-mono text-[11px] font-black text-white">
+                {ride.currentParticipants}/{ride.maxParticipants}
+              </span>
+            </div>
+
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-black text-white ${level.bg}`}
+            >
+              {level.label}
+            </span>
+          </div>
+        </div>
+
+        {/* الزر والسعر */}
+        <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+          <div className="flex items-baseline gap-1 font-mono">
+            <span className="text-xl font-black text-[#F9EA02]">{ride.basePrice}</span>
+            <span className="text-[10px] font-bold text-white/50">ل.س</span>
+          </div>
+
+          {status.canBook ? (
+            <span className="inline-flex items-center gap-1.5 rounded-xl bg-[#F9EA02] px-3.5 py-1.5 text-xs font-black text-black transition group-hover:bg-[#F9EA02]/90">
+              احجز
+              <ArrowLeft size={14} strokeWidth={2.5} className="transition group-hover:-translate-x-1" />
+            </span>
+          ) : (
+            <span className="text-[11px] font-bold text-white/40">غير متاح</span>
+          )}
         </div>
       </div>
     </Link>

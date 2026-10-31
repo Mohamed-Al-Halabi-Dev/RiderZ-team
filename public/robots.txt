@@ -1,10 +1,12 @@
 User-agent: *
 Allow: /
 
-# منع جوجل من الدخول لصفحات الأدمن والبروفايل
+# منع جوجل من أرشفة الصفحات الخاصة
 Disallow: /admin/
 Disallow: /profile/
-Disallow: /unauthorized
+Disallow: /bookings/my
+Disallow: /login
+Disallow: /signup
 
-# رابط الـ Sitemap
-Sitemap: https://riderz-clup.runasp.net/sitemap.xml
+# رابط ملف الـ Sitemap
+Sitemap: https://riderz-team.vercel.app/sitemap.xml

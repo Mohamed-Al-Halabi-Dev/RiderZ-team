@@ -13,8 +13,7 @@ const glass =
   "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
 const inputClass =
   "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white placeholder:text-white/30 outline-none transition focus:border-[#F9EA02]/50 focus:ring-2 focus:ring-[#F9EA02]/20";
-const labelClass =
-  "mb-1.5 block text-[11px] font-bold uppercase text-white/50";
+const labelClass = "mb-1.5 block text-[11px] font-bold uppercase text-white/50";
 
 const ALL_LEVELS = [
   "Beginner_A",
@@ -27,7 +26,7 @@ const ALL_LEVELS = [
   "Advanced_B",
   "Advanced_C",
 ];
-const ALL_STATUSES = ["متاح", "أكتمل العدد", "قد بدء", "منتهي", "ملغى"];
+const ALL_STATUSES = ["متاح", "أكتمل العدد", "قد بدء", "منتهي", "ملغي"];
 const fixUrl = (url) =>
   !url ? "" : url.startsWith("/") ? `${API_URL}${url}` : url;
 
