@@ -1,0 +1,301 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api, { API_URL } from "../config/api";
+import {
+  Calendar,
+  ArrowLeft,
+  Ticket,
+  Loader2,
+  AlertCircle,
+  XCircle,
+  AlertTriangle,
+} from "lucide-react";
+import Seo from "../components/Seo";
+
+const glass =
+  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+
+const fixUrl = (url) =>
+  !url ? "" : url.startsWith("/") ? `${API_URL}${url}` : url;
+
+const STATUS_MAP = {
+  Booked: {
+    label: "مؤكد",
+    color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+  },
+  Review: {
+    label: "قيد المراجعة",
+    color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  },
+  Cancelled: {
+    label: "ملغي",
+    color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
+  },
+};
+
+const FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80";
+
+const imgFor = (url) =>
+  !url || url.includes("example.com") ? FALLBACK_IMG : fixUrl(url);
+
+export default function MyBookings() {
+  const navigate = useNavigate();
+  const [bookings, setBookings] = useState([]);
+  const [status, setStatus] = useState("loading");
+  const [bookingToCancel, setBookingToCancel] = useState(null);
+  const [cancelling, setCancelling] = useState(false);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    api
+      .get("/api/bookings/my", { signal: ctrl.signal })
+      .then((res) => {
+        const data = res.data?.data ?? res.data;
+        setBookings(Array.isArray(data) ? data : []);
+        setStatus("ready");
+      })
+      .catch((err) => {
+        if (err.name === "CanceledError") return;
+        if (err.response?.status === 401) {
+          navigate("/login", { state: { from: "/bookings/my" } });
+        } else {
+          setStatus("error");
+        }
+      });
+
+    return () => ctrl.abort();
+  }, [navigate]);
+
+  const confirmCancel = async () => {
+    if (!bookingToCancel) return;
+    setCancelling(true);
+    try {
+      await api.delete(`/api/bookings/${bookingToCancel.rideId}`);
+      setBookings((prev) =>
+        prev.filter((b) => b.rideId !== bookingToCancel.rideId)
+      );
+      setBookingToCancel(null);
+    } catch (err) {
+      alert(err?.response?.data?.message || "تعذر إلغاء الحجز.");
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  if (status === "loading") {
+    return (
+      <div className="grid h-screen place-items-center bg-[#08080c]">
+        <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div className="grid h-screen place-items-center bg-[#08080c] px-4 text-center text-white">
+        <div>
+          <AlertCircle size={48} className="mx-auto mb-4 text-rose-400" />
+          <p className="text-lg font-bold">حدث خطأ أثناء تحميل الحجوزات.</p>
+          <Link
+            to="/"
+            className="mt-6 inline-block rounded-xl bg-[#F9EA02] px-6 py-2.5 text-sm font-black text-black"
+          >
+            رجوع للرئيسية
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Seo title="حجوزاتي" description="حجوزاتي" noindex={true} />
+      <main
+        dir="rtl"
+        className="relative min-h-screen overflow-hidden bg-[#08080c] pb-20 pt-24 text-white sm:pt-28"
+      >
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
+          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+            }}
+          />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="mb-8">
+            <Link
+              to="/rides"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-white/50 transition hover:text-[#F9EA02]"
+            >
+              <ArrowLeft size={16} className="rotate-180" />
+              استكشف الجولات
+            </Link>
+
+            <div className="flex items-center gap-3">
+              <span className="grid size-12 place-items-center rounded-2xl bg-[#F9EA02] text-black shadow-lg shadow-[#F9EA02]/20">
+                <Ticket size={24} strokeWidth={2.5} />
+              </span>
+              <div>
+                <h1 className="text-2xl font-black sm:text-3xl">حجوزاتي</h1>
+                <p className="text-sm text-white/50">
+                  {bookings.length} {bookings.length === 1 ? "حجز" : "حجوزات"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {bookings.length === 0 ? (
+            <div className={`${glass} py-20 text-center`}>
+              <div className="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-white/5 text-white/20">
+                <Ticket size={32} />
+              </div>
+              <p className="text-lg font-bold text-white/70">ما في حجوزات بعد</p>
+              <p className="mt-2 text-sm text-white/40">
+                ابدأ رحلتك الأولى مع RiderZ
+              </p>
+              <Link
+                to="/rides"
+                className="mt-6 inline-block rounded-xl bg-[#F9EA02] px-6 py-3 text-sm font-black text-black transition hover:bg-[#F9EA02]/90 active:scale-[0.98]"
+              >
+                استكشف الجولات
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {bookings.map((b, idx) => {
+                const info = STATUS_MAP[b.statusBooking] ?? {
+                  label: b.statusBooking,
+                  color: "text-white/60 bg-white/5 border-white/10",
+                };
+
+                return (
+                  <div
+                    key={`${b.rideId}-${idx}`}
+                    className={`${glass} group overflow-hidden transition hover:border-white/20`}
+                  >
+                    <div className="flex flex-col sm:flex-row">
+                      <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden sm:aspect-auto sm:h-auto sm:w-48">
+                        <img
+                          src={imgFor(b.ima_Cover_Ride)}
+                          alt={b.rideName}
+                          width={600}
+                          height={338}
+                          loading="lazy"
+                          decoding="async"
+                          className="size-full object-cover transition duration-500 group-hover:scale-105"
+                          onError={(e) =>
+                            (e.currentTarget.src = FALLBACK_IMG)
+                          }
+                        />
+                      </div>
+
+                      <div className="flex flex-1 flex-col justify-between gap-4 p-5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="line-clamp-2 text-lg font-black leading-tight text-white">
+                              {b.rideName}
+                            </h3>
+                            <div className="mt-2 flex items-center gap-2 text-xs text-white/50">
+                              <Calendar size={14} className="text-[#F9EA02]" />
+                              <span>حُجز في: {b.dateBooking}</span>
+                            </div>
+                          </div>
+                          <span
+                            className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-black ${info.color}`}
+                          >
+                            {info.label}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-3 border-t border-white/5 pt-2">
+                          <div className="flex items-baseline gap-1.5 font-mono">
+                            <span className="text-xl font-black text-[#F9EA02]">
+                              {b.totalPrice}
+                            </span>
+                            <span className="text-[10px] font-bold text-white/40">
+                              ل.س
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {b.statusBooking === "Review" && (
+                              <button
+                                onClick={() => setBookingToCancel(b)}
+                                className="flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-400 transition hover:bg-rose-500/20"
+                              >
+                                <XCircle size={12} /> إلغاء
+                              </button>
+                            )}
+                            <Link
+                              to={`/rides/${b.rideId}`}
+                              className="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-2 text-xs font-bold text-white/70 transition hover:border-[#F9EA02]/40 hover:text-[#F9EA02]"
+                            >
+                              عرض الرحلة
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {bookingToCancel && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+            onClick={() => !cancelling && setBookingToCancel(null)}
+          >
+            <div
+              className="w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#0d0d10] shadow-2xl shadow-black/60"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 text-center">
+                <div className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-rose-500/15 text-rose-400">
+                  <AlertTriangle size={32} />
+                </div>
+                <h2 className="text-xl font-black">إلغاء الحجز</h2>
+                <p className="mt-2 text-sm leading-relaxed text-white/50">
+                  هل أنت متأكد من إلغاء حجزك لرحلة{" "}
+                  <span className="font-bold text-white">
+                    "{bookingToCancel.rideName}"
+                  </span>
+                  ؟ سيتم إزالة حجزك نهائياً.
+                </p>
+              </div>
+              <div className="flex gap-2 p-4 pt-0">
+                <button
+                  onClick={() => setBookingToCancel(null)}
+                  disabled={cancelling}
+                  className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-black text-white/70 transition hover:bg-white/10 disabled:opacity-50"
+                >
+                  تراجع
+                </button>
+                <button
+                  onClick={confirmCancel}
+                  disabled={cancelling}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-rose-500 py-3 text-sm font-black text-white transition hover:bg-rose-600 disabled:opacity-50"
+                >
+                  {cancelling ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    "نعم، إلغاء"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </>
+  );
+}

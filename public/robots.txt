@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# منع جوجل من الدخول لصفحات الأدمن والبروفايل
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /unauthorized
+
+# رابط الـ Sitemap
+Sitemap: https://riderz-clup.runasp.net/sitemap.xml
