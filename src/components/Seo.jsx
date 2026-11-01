@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 // ⚠️ غيري هاد الدومين للدومين النهائي لما ترفعي الموقع
 const SITE_NAME = "RiderZ";
-const BASE_URL = "https://riderz-clup.runasp.net"; 
+const BASE_URL = "https://riderz-team.vercel.app"; 
 const DEFAULT_IMAGE = "../assets/Logo/RiderZLogo.jpg"; // تأكدي إنك حطيتي صورة بهذا الاسم بملف public
 
 export default function Seo({
