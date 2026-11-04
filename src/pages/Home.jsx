@@ -352,7 +352,7 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
               <div className={`${glass} col-span-2 row-span-2 overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793831147/R4"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793831147/R4.webp"
                   alt="Gallery"
                   width={800}
                   height={800}
@@ -363,7 +363,7 @@ export default function Home() {
               </div>
               <div className={`${glass} overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/R3"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/R3.webp"
                   alt="Gallery"
                   width={400}
                   height={400}
@@ -374,7 +374,7 @@ export default function Home() {
               </div>
               <div className={`${glass} overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/R2"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/R2.webp"
                   alt="Gallery"
                   width={400}
                   height={400}
@@ -385,7 +385,7 @@ export default function Home() {
               </div>
               <div className={`${glass} col-span-1  overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793831617/R1"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793831617/R1.webp"
                   alt="Gallery"
                   width={400}
                   height={400}
@@ -396,7 +396,7 @@ export default function Home() {
               </div>
               <div className={`${glass} col-span-1  overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793835224/r5"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793835224/r5.webp"
                   alt="Gallery"
                   width={400}
                   height={400}
