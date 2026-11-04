@@ -311,46 +311,57 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
               <div className={`${glass} col-span-2 row-span-2 overflow-hidden`}>
                 <img
-                  src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&q=80"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/v1793831147/R4"
                   alt="Gallery"
                   width={800}
                   height={800}
                   loading="lazy"
                   decoding="async"
                   className="size-full object-cover transition duration-500 hover:scale-105"
-                />
+                  />
               </div>
               <div className={`${glass} overflow-hidden`}>
                 <img
-                  src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/R3"
                   alt="Gallery"
                   width={400}
                   height={400}
                   loading="lazy"
                   decoding="async"
                   className="size-full object-cover transition duration-500 hover:scale-105"
-                />
+                  />
               </div>
               <div className={`${glass} overflow-hidden`}>
                 <img
-                  src="https://images.unsplash.com/photo-1502744688674-c619d1586c9e?w=400&q=80"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/R2"
                   alt="Gallery"
                   width={400}
                   height={400}
                   loading="lazy"
                   decoding="async"
                   className="size-full object-cover transition duration-500 hover:scale-105"
-                />
+                  />
               </div>
-              <div className={`${glass} col-span-2 overflow-hidden`}>
+              <div className={`${glass} col-span-1  overflow-hidden`}>
                 <img
-                  src="https://images.unsplash.com/photo-1471506480299-ded5dfbaab8e?w=800&q=80"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/v1793831617/R1"
                   alt="Gallery"
-                  width={800}
+                  width={400}
                   height={400}
                   loading="lazy"
                   decoding="async"
-                  className="h-48 w-full object-cover transition duration-500 hover:scale-105"
+                  className="  object-cover transition duration-500 hover:scale-105"
+                />
+              </div>
+               <div className={`${glass} col-span-1  overflow-hidden`}>
+                <img
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/v1793835224/r5"
+                  alt="Gallery"
+                  width={400}
+                  height={400}
+                  loading="lazy"
+                  decoding="async"
+                  className="  object-cover transition duration-500 hover:scale-105"
                 />
               </div>
             </div>
