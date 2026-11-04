@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api, { API_URL } from "../config/api";
 import {
@@ -7,7 +7,6 @@ import {
   Map,
   Trophy,
   ShieldCheck,
-  Bike,
   CheckCircle2,
   HelpCircle,
   Crown,
@@ -26,6 +25,39 @@ const fixUrl = (url) => {
   return url;
 };
 
+const FALLBACK_RIDE_IMG =
+  "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=800&q=80";
+
+const PODIUM_STYLES = {
+  1: {
+    ring: "ring-[#F9EA02] ring-2",
+    badgeBg: "bg-[#F9EA02] text-black",
+    glow: "shadow-[0_0_60px_rgba(249,234,2,0.4)]",
+    border: "border-[#F9EA02]/50",
+    icon: Crown,
+    avatarSize: "size-20 sm:size-24",
+    nameClass: "text-[#F9EA02]",
+  },
+  2: {
+    ring: "ring-gray-300 ring-1",
+    badgeBg: "bg-gray-300 text-black",
+    glow: "shadow-[0_0_40px_rgba(200,200,200,0.2)]",
+    border: "border-gray-300/30",
+    icon: Medal,
+    avatarSize: "size-16 sm:size-20",
+    nameClass: "text-white",
+  },
+  3: {
+    ring: "ring-amber-600 ring-1",
+    badgeBg: "bg-amber-600 text-white",
+    glow: "shadow-[0_0_40px_rgba(180,83,9,0.25)]",
+    border: "border-amber-600/30",
+    icon: Medal,
+    avatarSize: "size-16 sm:size-20",
+    nameClass: "text-white",
+  },
+};
+
 export default function Home() {
   const { user } = useAuth();
 
@@ -34,11 +66,14 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let ignore = false;
+
     Promise.all([
       api.get("/api/users/leaderboard").catch(() => null),
       api.get("/api/rides").catch(() => null),
     ])
       .then(([leaderboardRes, ridesRes]) => {
+        if (ignore) return;
         if (leaderboardRes?.data?.data) {
           setTopUsers(leaderboardRes.data.data.slice(0, 3));
         }
@@ -47,7 +82,13 @@ export default function Home() {
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   return (
@@ -311,14 +352,14 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
               <div className={`${glass} col-span-2 row-span-2 overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/v1793831147/R4"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793831147/R4"
                   alt="Gallery"
                   width={800}
                   height={800}
                   loading="lazy"
                   decoding="async"
                   className="size-full object-cover transition duration-500 hover:scale-105"
-                  />
+                />
               </div>
               <div className={`${glass} overflow-hidden`}>
                 <img
@@ -329,7 +370,7 @@ export default function Home() {
                   loading="lazy"
                   decoding="async"
                   className="size-full object-cover transition duration-500 hover:scale-105"
-                  />
+                />
               </div>
               <div className={`${glass} overflow-hidden`}>
                 <img
@@ -340,11 +381,11 @@ export default function Home() {
                   loading="lazy"
                   decoding="async"
                   className="size-full object-cover transition duration-500 hover:scale-105"
-                  />
+                />
               </div>
               <div className={`${glass} col-span-1  overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/v1793831617/R1"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793831617/R1"
                   alt="Gallery"
                   width={400}
                   height={400}
@@ -353,9 +394,9 @@ export default function Home() {
                   className="  object-cover transition duration-500 hover:scale-105"
                 />
               </div>
-               <div className={`${glass} col-span-1  overflow-hidden`}>
+              <div className={`${glass} col-span-1  overflow-hidden`}>
                 <img
-                  src="https://res.cloudinary.com/lxlgfue4/image/upload/v1793835224/r5"
+                  src="https://res.cloudinary.com/lxlgfue4/image/upload/f_auto,q_auto/v1793835224/r5"
                   alt="Gallery"
                   width={400}
                   height={400}
@@ -451,7 +492,7 @@ export default function Home() {
    المكونات المساعدة
 ═══════════════════════════════════════ */
 
-function Podium({ topUsers }) {
+const Podium = memo(function Podium({ topUsers }) {
   const first = topUsers[0];
   const second = topUsers[1];
   const third = topUsers[2];
@@ -480,40 +521,10 @@ function Podium({ topUsers }) {
       )}
     </div>
   );
-}
+});
 
-function PodiumCard({ user, rank, height, isWinner }) {
-  const styles = {
-    1: {
-      ring: "ring-[#F9EA02] ring-2",
-      badgeBg: "bg-[#F9EA02] text-black",
-      glow: "shadow-[0_0_60px_rgba(249,234,2,0.4)]",
-      border: "border-[#F9EA02]/50",
-      icon: Crown,
-      avatarSize: "size-20 sm:size-24",
-      nameClass: "text-[#F9EA02]",
-    },
-    2: {
-      ring: "ring-gray-300 ring-1",
-      badgeBg: "bg-gray-300 text-black",
-      glow: "shadow-[0_0_40px_rgba(200,200,200,0.2)]",
-      border: "border-gray-300/30",
-      icon: Medal,
-      avatarSize: "size-16 sm:size-20",
-      nameClass: "text-white",
-    },
-    3: {
-      ring: "ring-amber-600 ring-1",
-      badgeBg: "bg-amber-600 text-white",
-      glow: "shadow-[0_0_40px_rgba(180,83,9,0.25)]",
-      border: "border-amber-600/30",
-      icon: Medal,
-      avatarSize: "size-16 sm:size-20",
-      nameClass: "text-white",
-    },
-  };
-
-  const style = styles[rank];
+const PodiumCard = memo(function PodiumCard({ user, rank, height, isWinner }) {
+  const style = PODIUM_STYLES[rank];
   const RankIcon = style.icon;
 
   return (
@@ -617,9 +628,9 @@ function PodiumCard({ user, rank, height, isWinner }) {
       </div>
     </div>
   );
-}
+});
 
-function RidePreviewCard({ ride }) {
+const RidePreviewCard = memo(function RidePreviewCard({ ride }) {
   const displayDate = ride.rideDate
     ? new Date(ride.rideDate).toLocaleDateString("ar-SY", {
         weekday: "long",
@@ -628,13 +639,10 @@ function RidePreviewCard({ ride }) {
       })
     : "قريباً";
 
-  const fallbackImg =
-    "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=800&q=80";
-
   const imgUrl =
     ride.imageUrl && !ride.imageUrl.includes("testimage")
       ? fixUrl(ride.imageUrl)
-      : fallbackImg;
+      : FALLBACK_RIDE_IMG;
 
   return (
     <Link
@@ -651,7 +659,7 @@ function RidePreviewCard({ ride }) {
           decoding="async"
           className="size-full object-cover transition duration-500 group-hover:scale-110"
           onError={(e) => {
-            e.currentTarget.src = fallbackImg;
+            e.currentTarget.src = FALLBACK_RIDE_IMG;
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#08080c] via-[#08080c]/30 to-transparent" />
@@ -674,9 +682,9 @@ function RidePreviewCard({ ride }) {
       </div>
     </Link>
   );
-}
+});
 
-function FeatureCard({ icon: Icon, title, desc }) {
+const FeatureCard = memo(function FeatureCard({ icon: Icon, title, desc }) {
   return (
     <div
       className={`${glass} group relative overflow-hidden p-6 transition hover:border-[#F9EA02]/30 hover:bg-white/[0.06]`}
@@ -688,9 +696,9 @@ function FeatureCard({ icon: Icon, title, desc }) {
       <p className="mt-2 text-sm leading-relaxed text-white/50">{desc}</p>
     </div>
   );
-}
+});
 
-function StepCard({ number, title, desc }) {
+const StepCard = memo(function StepCard({ number, title, desc }) {
   return (
     <div
       className={`${glass} relative overflow-hidden p-6 text-center sm:text-start`}
@@ -708,9 +716,9 @@ function StepCard({ number, title, desc }) {
       </div>
     </div>
   );
-}
+});
 
-function FaqItem({ question, answer }) {
+const FaqItem = memo(function FaqItem({ question, answer }) {
   return (
     <div className={`${glass} flex items-start gap-4 p-5`}>
       <HelpCircle size={20} className="mt-0.5 shrink-0 text-[#F9EA02]" />
@@ -720,4 +728,4 @@ function FaqItem({ question, answer }) {
       </div>
     </div>
   );
-}
+});
