@@ -232,7 +232,7 @@ export default function AdminUsers() {
   return (
     <main
       dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-[#08080c] text-white"
+      className="relative min-h-screen bg-[#08080c] text-white"
     >
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
@@ -280,7 +280,7 @@ export default function AdminUsers() {
               <button
                 key={key}
                 onClick={() => setRoleFilter(key)}
-                className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black transition ${
+                className={`flex flex-wrap items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-black transition ${
                   isActive
                     ? "bg-[#F9EA02] text-black shadow-lg shadow-[#F9EA02]/25"
                     : "border border-white/10 bg-white/[0.04] text-white/60 hover:border-white/20 hover:bg-white/10 hover:text-white"
@@ -413,58 +413,82 @@ function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
 
   return (
     <div
-      className={`${glass} group relative overflow-hidden transition hover:border-white/20`}
+      className={`${glass} group relative transition hover:border-white/20`}
     >
       <div
-        className={`h-1 w-full bg-gradient-to-l ${
+        className={`h-1 w-full rounded-t-3xl bg-gradient-to-l ${
           user.isActive
             ? "from-transparent via-emerald-400 to-transparent"
             : "from-transparent via-rose-400 to-transparent"
         }`}
       />
       <div className="p-4 sm:p-5">
-        <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
-          <div className="relative shrink-0">
-            <div
-              className={`size-16 overflow-hidden rounded-2xl bg-white/5 ring-2 ${role.ring}`}
-            >
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt={user.username}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <div className="grid size-full place-items-center text-lg font-black text-white/50">
-                  {initials}
-                </div>
+        {/* ✅ تعديل: ضفنا w-full للموبايل عشان الترتيب يكون طولي دائماً */}
+        <div className="flex w-full flex-col items-center gap-4 sm:flex-row sm:flex-nowrap sm:items-center">
+          
+          {/* Avatar + Name (Mobile: Row, Desktop: Row) */}
+          <div className="flex w-full items-center gap-3 sm:w-auto sm:flex-1">
+            <div className="relative shrink-0">
+              <div
+                className={`size-14 sm:size-16 overflow-hidden rounded-2xl bg-white/5 ring-2 ${role.ring}`}
+              >
+                {avatar ? (
+                  <img
+                    src={avatar}
+                    alt={user.username}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <div className="grid size-full place-items-center text-lg font-black text-white/50">
+                    {initials}
+                  </div>
+                )}
+              </div>
+              <span
+                className={`absolute -bottom-1 -end-1 size-4 rounded-full border-2 border-[#08080c] ${
+                  user.isActive ? "bg-emerald-400" : "bg-rose-400"
+                }`}
+              />
+            </div>
+
+            <div className="min-w-0 flex-1 text-center sm:text-start">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                <p className="text-base sm:text-lg font-black truncate">
+                  {user.firstName} {user.lastName}
+                </p>
+                <span className="font-mono text-[10px] text-white/30">
+                  #{user.id}
+                </span>
+              </div>
+              <p
+                dir="ltr"
+                className="truncate font-mono text-xs text-white/40"
+              >
+                @{user.username}
+              </p>
+            </div>
+            
+            {/* 3 Dots (Mobile: Top Right, Desktop: End) */}
+            <div className="relative shrink-0 sm:hidden">
+              <button
+                onClick={onToggleMenu}
+                className={`grid size-9 place-items-center rounded-xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:border-white/20 hover:bg-white/10 hover:text-white ${
+                  isMenuOpen ? "border-[#F9EA02]/40 bg-[#F9EA02]/10 text-[#F9EA02]" : ""
+                }`}
+              >
+                <MoreVertical size={16} />
+              </button>
+              {isMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={onToggleMenu} />
+                  <DropdownMenu user={user} onAction={onAction} />
+                </>
               )}
             </div>
-            <span
-              className={`absolute -bottom-1 -end-1 size-4 rounded-full border-2 border-[#08080c] ${
-                user.isActive ? "bg-emerald-400" : "bg-rose-400"
-              }`}
-            />
           </div>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-baseline gap-2">
-              <p className="text-lg font-black">
-                {user.firstName} {user.lastName}
-              </p>
-              <span className="font-mono text-[10px] text-white/30">
-                #{user.id}
-              </span>
-            </div>
-            <p
-              dir="ltr"
-              className="truncate font-mono text-xs text-white/40"
-            >
-              @{user.username}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-1.5">
+          {/* Badges + 3 Dots (Mobile: Row below, Desktop: Row end) */}
+          <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:justify-end">
             <span
               className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black ${role.bg} ${role.text}`}
             >
@@ -489,31 +513,30 @@ function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
               <Star size={11} />
               {user.level}
             </span>
-          </div>
-
-          <div className="relative shrink-0">
-            <button
-              onClick={onToggleMenu}
-              className={`grid size-9 place-items-center rounded-xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:border-white/20 hover:bg-white/10 hover:text-white ${
-                isMenuOpen
-                  ? "border-[#F9EA02]/40 bg-[#F9EA02]/10 text-[#F9EA02]"
-                  : ""
-              }`}
-            >
-              <MoreVertical size={16} />
-            </button>
-            {isMenuOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={onToggleMenu} />
-                <DropdownMenu user={user} onAction={onAction} />
-              </>
-            )}
+            
+            {/* Desktop 3 Dots */}
+            <div className="relative hidden shrink-0 sm:block ms-2">
+              <button
+                onClick={onToggleMenu}
+                className={`grid size-9 place-items-center rounded-xl border border-white/10 bg-white/[0.03] text-white/60 transition hover:border-white/20 hover:bg-white/10 hover:text-white ${
+                  isMenuOpen ? "border-[#F9EA02]/40 bg-[#F9EA02]/10 text-[#F9EA02]" : ""
+                }`}
+              >
+                <MoreVertical size={16} />
+              </button>
+              {isMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={onToggleMenu} />
+                  <DropdownMenu user={user} onAction={onAction} />
+                </>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="my-4 h-px bg-white/5" />
+        <div className="my-4 h-px w-full bg-white/5" />
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Section title="الاتصال">
             <InfoRow icon={Mail} label="الإيميل" value={user.email} ltr />
             <InfoRow icon={Phone} label="الهاتف" value={user.phone} ltr />
@@ -538,7 +561,7 @@ function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
           </Section>
 
           <Section title="الإحصائيات">
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid w-full grid-cols-3 gap-1.5">
               <StatBox
                 icon={Route}
                 value={user.totalKilometers ?? 0}
@@ -623,7 +646,8 @@ function DropdownMenu({ user, onAction }) {
   };
   return (
     <div
-      className="absolute end-0 top-full z-50 mt-2 min-w-[200px] overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d10]/95 shadow-2xl shadow-black/60 backdrop-blur-2xl"
+      // ✅ التعديل هون: القائمة تنفتح لليسار (عشان ما تطلع برا الشاشة على الموبايل)
+      className="absolute left-0 top-full z-[100] mt-2 min-w-[200px] overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d10] shadow-2xl shadow-black/60 backdrop-blur-2xl"
       onClick={(e) => e.stopPropagation()}
     >
       <MenuItem
