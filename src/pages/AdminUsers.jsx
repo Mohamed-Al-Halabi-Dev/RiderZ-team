@@ -245,7 +245,7 @@ function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
   const RoleIcon = role.icon;
 
   return (
-    <div className={`${glass} group relative transition hover:border-white/20`}>
+    <div className={`${glass} group relative w-full transition hover:border-white/20`}>
       <div className={`h-1 w-full rounded-t-3xl bg-gradient-to-l ${user.isActive ? "from-transparent via-emerald-400 to-transparent" : "from-transparent via-rose-400 to-transparent"}`} />
       <div className="p-4 sm:p-5">
         <div className="flex w-full flex-col items-center gap-4 sm:flex-row sm:flex-nowrap sm:items-center">
@@ -471,23 +471,28 @@ function ActionModal({ dialog, onClose, onConfirm, onChangeLevel, onChangeRole, 
 
 function Section({ title, children, warning }) {
   return (
-    <div className={`rounded-xl border p-3 ${warning ? "border-amber-500/20 bg-amber-500/5" : "border-white/5 bg-white/[0.02]"}`}>
+    <div className={`min-w-0 rounded-xl border p-3 ${warning ? "border-amber-500/20 bg-amber-500/5" : "border-white/5 bg-white/[0.02]"}`}>
       <p className={`mb-2 text-[10px] font-black uppercase tracking-widest ${warning ? "text-amber-400" : "text-white/40"}`}>{title}</p>
-      <div className="space-y-1">{children}</div>
+      <div className="w-full min-w-0 space-y-1">{children}</div>
     </div>
   );
 }
 
+// ✅ تعديل جذري لمكون InfoRow عشان يمنع النصوص الطويلة (زي الروابط) من تمديد الشاشة
 function InfoRow({ icon: Icon, label, value, ltr, link }) {
   return (
-    <div className="flex items-center justify-between gap-2 text-[11px]">
+    <div className="flex w-full min-w-0 items-center justify-between gap-2 text-[11px]">
       <span className="flex shrink-0 items-center gap-1.5 text-white/40">
         <Icon size={10} /> {label}
       </span>
       {link ? (
-        <a href={value} target="_blank" rel="noopener noreferrer" dir={ltr ? "ltr" : "rtl"} className="min-w-0 truncate font-bold text-[#F9EA02] hover:underline">{value}</a>
+        <a href={value} target="_blank" rel="noopener noreferrer" dir={ltr ? "ltr" : "rtl"} className="min-w-0 flex-1 truncate text-left font-bold text-[#F9EA02] hover:underline">
+          {value}
+        </a>
       ) : (
-        <span dir={ltr ? "ltr" : "rtl"} className="min-w-0 truncate font-bold text-white/80">{value}</span>
+        <span dir={ltr ? "ltr" : "rtl"} className="min-w-0 flex-1 truncate text-left font-bold text-white/80">
+          {value}
+        </span>
       )}
     </div>
   );
