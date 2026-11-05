@@ -55,6 +55,7 @@ export default function EditProfile() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
+    phone: "", 
     profile_Image_URL: "",
     profile_Cover_URL: "",
     instagram_URL: "",
@@ -66,7 +67,7 @@ export default function EditProfile() {
 
   const [bikeForm, setBikeForm] = useState({ bikeType: "", imageUrl: "" });
   const [bikeExists, setBikeExists] = useState(false);
-  const [readonly, setReadonly] = useState({ email: "", phone: "" });
+  const [readonly, setReadonly] = useState({ email: "" }); 
   const [uploading, setUploading] = useState({
     image: false,
     cover: false,
@@ -85,6 +86,7 @@ export default function EditProfile() {
         setForm({
           firstName: user.firstName || "",
           lastName: user.lastName || "",
+          phone: user.phone || "", 
           profile_Image_URL: fixUrl(user.profile_Image_URL),
           profile_Cover_URL: fixUrl(user.profile_Cover_URL),
           instagram_URL: user.instagram_URL || "",
@@ -93,7 +95,7 @@ export default function EditProfile() {
           emergencyContactName: user.emergencyContactName || "",
           emergencyContactPhone: user.emergencyContactPhone || "",
         });
-        setReadonly({ email: user.email || "", phone: user.phone || "" });
+        setReadonly({ email: user.email || "" });
 
         if (user.hasBike) {
           try {
@@ -149,7 +151,6 @@ export default function EditProfile() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      // ✅ المسار الصح: /api/images/{folder}
       const res = await api.post("/api/images/users", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -179,10 +180,31 @@ export default function EditProfile() {
     e.preventDefault();
     setStatus(null);
 
+    // ✅ التحقق اليدوي من الحقول (بدل رسائل المتصفح البشعة)
     if (!form.firstName.trim() || !form.lastName.trim()) {
       setStatus({ type: "error", message: "الاسم الأول واسم العائلة مطلوبان" });
       return;
     }
+
+    // ✅ التحقق من رقم الهاتف الأساسي
+    const phoneRegex = /^09\d{8}$/;
+    if (!form.phone.trim() || !phoneRegex.test(form.phone.trim())) {
+      setStatus({
+        type: "error",
+        message: "رقم الهاتف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام (مثال: 0912345678)",
+      });
+      return;
+    }
+
+    // ✅ التحقق من رقم هاتف الطوارئ (إذا تم إدخاله)
+    if (form.emergencyContactPhone.trim() && !phoneRegex.test(form.emergencyContactPhone.trim())) {
+      setStatus({
+        type: "error",
+        message: "رقم هاتف الطوارئ يجب أن يبدأ بـ 09 ويتكون من 10 أرقام",
+      });
+      return;
+    }
+
     if (form.has_Bike && !bikeForm.bikeType.trim()) {
       setStatus({ type: "error", message: "يرجى اختيار نوع الدراجة" });
       return;
@@ -193,6 +215,7 @@ export default function EditProfile() {
     const userPayload = {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
+      phone: form.phone.trim(),
       profile_Image_URL: form.profile_Image_URL.trim() || null,
       profile_Cover_URL: form.profile_Cover_URL.trim() || null,
       instagram_URL: form.instagram_URL.trim() || null,
@@ -274,7 +297,8 @@ export default function EditProfile() {
           <span className="w-20" />
         </div>
 
-        <form onSubmit={handleSave} className="space-y-4">
+        {/* ✅ أضفنا noValidate عشان نلغي رسائل المتصفح الافتراضية */}
+        <form onSubmit={handleSave} noValidate className="space-y-4">
           <div className={`${glass} overflow-hidden`}>
             <div className="relative h-40 w-full bg-gradient-to-br from-[#F9EA02]/30 via-purple-500/20 to-cyan-400/10 sm:h-52">
               {form.profile_Cover_URL && (
@@ -378,7 +402,6 @@ export default function EditProfile() {
                   className={inputClass}
                   value={form.firstName}
                   onChange={(e) => updateField("firstName", e.target.value)}
-                  required
                 />
               </div>
               <div>
@@ -388,10 +411,10 @@ export default function EditProfile() {
                   className={inputClass}
                   value={form.lastName}
                   onChange={(e) => updateField("lastName", e.target.value)}
-                  required
                 />
               </div>
             </div>
+            
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <div className="flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 text-[12px]">
                 <Lock size={12} className="shrink-0 text-white/30" />
@@ -403,15 +426,20 @@ export default function EditProfile() {
                   {readonly.email || "—"}
                 </span>
               </div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 text-[12px]">
-                <Lock size={12} className="shrink-0 text-white/30" />
-                <span className="text-white/40">الهاتف:</span>
-                <span
+              
+              <div className="relative">
+                <div className="absolute inset-y-0 start-3 flex items-center text-white/30 pointer-events-none">
+                  <User size={14} />
+                </div>
+                <input
+                  type="tel"
                   dir="ltr"
-                  className="ms-auto truncate font-bold text-white/60"
-                >
-                  {readonly.phone || "—"}
-                </span>
+                  className={`${inputClass} text-end`}
+                  value={form.phone}
+                  onChange={(e) => updateField("phone", e.target.value)}
+                  placeholder="09xxxxxxxx"
+                  maxLength={10}
+                />
               </div>
             </div>
           </div>
@@ -497,7 +525,6 @@ export default function EditProfile() {
                       onChange={(e) =>
                         updateBikeField("bikeType", e.target.value)
                       }
-                      required
                     >
                       <option value="" disabled className="bg-[#1a1a1a]">
                         اختر نوع الدراجة...
@@ -593,6 +620,7 @@ export default function EditProfile() {
                     updateField("emergencyContactPhone", e.target.value)
                   }
                   placeholder="09xxxxxxxx"
+                  maxLength={10}
                 />
               </div>
             </div>

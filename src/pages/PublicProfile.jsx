@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import {
   ArrowRight, Route as RouteIcon, Bike as BikeIcon,
-  Shield, ArrowUpLeft, Trophy
+  Shield, ArrowUpLeft, Trophy, X, // ✅ أضفنا أيقونة X
 } from "lucide-react";
 import Seo from "../components/Seo";
 
@@ -56,6 +56,9 @@ export default function PublicProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  
+  // ✅ حالة (State) للتحكم بفتح وإغلاق نافذة الصورة
+  const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -166,8 +169,13 @@ export default function PublicProfile() {
             <div className="relative -mt-16 px-5 pb-6 sm:-mt-20 sm:px-8">
               <div className="flex flex-col items-center text-center sm:flex-row sm:items-end sm:text-start">
 
-                <div className="relative shrink-0">
-                  <div className="size-28 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] sm:size-32">
+                {/* ✅ أضفنا onClick و cursor-pointer عشان نفتح الصورة */}
+                <div 
+                  className="relative shrink-0 cursor-pointer group"
+                  onClick={() => avatarUrl && setIsImageOpen(true)}
+                  title="تكبير الصورة"
+                >
+                  <div className="size-28 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] sm:size-32 transition group-hover:scale-105">
                     <div className="size-full overflow-hidden rounded-full bg-[#0a0a0a]">
                       {avatarUrl ? (
                         <img
@@ -176,7 +184,7 @@ export default function PublicProfile() {
                           width={128}
                           height={128}
                           decoding="async"
-                          className="size-full object-cover"
+                          className="size-full object-cover transition group-hover:opacity-80"
                           onError={(e) => {
                             e.currentTarget.style.display = "none";
                             e.currentTarget.parentElement.innerHTML = `<div class="grid size-full place-items-center text-4xl font-black text-[#F9EA02]">${initials}</div>`;
@@ -297,6 +305,32 @@ export default function PublicProfile() {
           </Link>
 
         </div>
+
+        {/* ✅ نافذة عرض الصورة المكبرة (Modal) */}
+        {isImageOpen && avatarUrl && (
+          <div 
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setIsImageOpen(false)}
+          >
+            <div 
+              className="relative max-h-[90vh] max-w-4xl flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()} // منع إغلاق النافذة عند الضغط على الصورة نفسها
+            >
+              <button 
+                onClick={() => setIsImageOpen(false)} 
+                className="absolute -top-12 right-0 md:-right-12 md:top-0 text-white hover:text-[#F9EA02] bg-white/10 p-2 rounded-full backdrop-blur-md transition"
+                title="إغلاق"
+              >
+                <X size={24} />
+              </button>
+              <img 
+                src={avatarUrl} 
+                alt={fullName} 
+                className="max-h-[85vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10" 
+              />
+            </div>
+          </div>
+        )}
       </main>
     </>
   );

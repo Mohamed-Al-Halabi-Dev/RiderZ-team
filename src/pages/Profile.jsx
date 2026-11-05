@@ -4,7 +4,7 @@ import axios from "axios";
 import {
   Mail, Phone, Bike as BikeIcon, Shield, LogOut,
   Route as RouteIcon, Edit3,
-  LayoutDashboard, AlertTriangle, Calendar, ExternalLink, User, Plus,
+  LayoutDashboard, AlertTriangle, Calendar, ExternalLink, User, Plus, X,
 } from "lucide-react";
 import { API_URL } from "../config/api";
 import { getLevel } from "../constants/levels";
@@ -75,6 +75,9 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [bike, setBike] = useState(null);
   const [status, setStatus] = useState("loading");
+  
+  // ✅ حالة (State) للتحكم بفتح وإغلاق نافذة الصورة
+  const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -174,8 +177,13 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-col px-6 pb-6">
-                  <div className="relative -mt-14 self-center">
-                    <div className="size-24 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] sm:size-28">
+                  {/* ✅ أضفنا onClick و cursor-pointer عشان نفتح الصورة */}
+                  <div 
+                    className="relative -mt-14 self-center cursor-pointer group"
+                    onClick={() => avatarUrl && setIsImageOpen(true)}
+                    title="تكبير الصورة"
+                  >
+                    <div className="size-24 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] sm:size-28 transition group-hover:scale-105">
                       <div className="size-full overflow-hidden rounded-full bg-[#0a0a0a]">
                         {avatarUrl ? (
                           <img 
@@ -184,7 +192,7 @@ export default function Profile() {
                             width={112}
                             height={112}
                             decoding="async"
-                            className="size-full object-cover"
+                            className="size-full object-cover transition group-hover:opacity-80"
                             onError={(e) => { e.currentTarget.style.display = "none"; }} 
                           />
                         ) : (
@@ -381,6 +389,32 @@ export default function Profile() {
             </div>
           </div>
         </div>
+
+        {/* ✅ نافذة عرض الصورة المكبرة (Modal) */}
+        {isImageOpen && avatarUrl && (
+          <div 
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setIsImageOpen(false)}
+          >
+            <div 
+              className="relative max-h-[90vh] max-w-4xl flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()} // منع إغلاق النافذة عند الضغط على الصورة نفسها
+            >
+              <button 
+                onClick={() => setIsImageOpen(false)} 
+                className="absolute -top-12 right-0 md:-right-12 md:top-0 text-white hover:text-[#F9EA02] bg-white/10 p-2 rounded-full backdrop-blur-md transition"
+                title="إغلاق"
+              >
+                <X size={24} />
+              </button>
+              <img 
+                src={avatarUrl} 
+                alt={fullName} 
+                className="max-h-[85vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10" 
+              />
+            </div>
+          </div>
+        )}
       </main>
     </>
   );

@@ -65,8 +65,49 @@ export default function Signup() {
     setError("");
     setLoading(true);
 
+    // ✅ التحقق اليدوي من الحقول (بدل رسائل المتصفح البشعة)
+    if (!form.firstName.trim()) {
+      setError("الرجاء إدخال الاسم الأول");
+      setLoading(false);
+      return;
+    }
+    if (!form.lastName.trim()) {
+      setError("الرجاء إدخال اسم العائلة");
+      setLoading(false);
+      return;
+    }
+    if (!form.username.trim()) {
+      setError("الرجاء إدخال اسم المستخدم");
+      setLoading(false);
+      return;
+    }
+    
+    // التحقق من صيغة البريد الإلكتروني
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!form.email.trim() || !emailRegex.test(form.email.trim())) {
+      setError("الرجاء إدخال بريد إلكتروني صحيح");
+      setLoading(false);
+      return;
+    }
+
+    // التحقق من رقم الهاتف الأساسي
+    const phoneRegex = /^09\d{8}$/;
+    if (!form.phone.trim() || !phoneRegex.test(form.phone.trim())) {
+      setError("رقم الهاتف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام (مثال: 0912345678)");
+      setLoading(false);
+      return;
+    }
+
+    // التحقق من كلمة المرور
     if (form.password.length < 6) {
       setError("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
+      setLoading(false);
+      return;
+    }
+
+    // التحقق من رقم هاتف الطوارئ (إذا تم إدخاله)
+    if (form.emergencyContactPhone.trim() && !phoneRegex.test(form.emergencyContactPhone.trim())) {
+      setError("رقم هاتف الطوارئ يجب أن يبدأ بـ 09 ويتكون من 10 أرقام");
       setLoading(false);
       return;
     }
@@ -190,7 +231,8 @@ export default function Signup() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* ✅ أضفنا noValidate عشان نلغي رسائل المتصفح الافتراضية */}
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className={fieldWrapper}>
                 <User size={16} className={fieldIcon} />
@@ -201,7 +243,6 @@ export default function Signup() {
                   placeholder="الاسم الأول"
                   value={form.firstName}
                   onChange={handleChange}
-                  required
                   className={fieldInput}
                 />
               </div>
@@ -214,7 +255,6 @@ export default function Signup() {
                   placeholder="اسم العائلة"
                   value={form.lastName}
                   onChange={handleChange}
-                  required
                   className={fieldInput}
                 />
               </div>
@@ -229,7 +269,6 @@ export default function Signup() {
                 placeholder="اسم المستخدم (Username)"
                 value={form.username}
                 onChange={handleChange}
-                required
                 dir="ltr"
                 className={fieldInput}
               />
@@ -245,7 +284,6 @@ export default function Signup() {
                   placeholder="البريد الإلكتروني"
                   value={form.email}
                   onChange={handleChange}
-                  required
                   dir="ltr"
                   className={fieldInput}
                 />
@@ -256,10 +294,10 @@ export default function Signup() {
                   type="tel"
                   name="phone"
                   autoComplete="tel"
-                  placeholder="رقم الهاتف"
+                  placeholder="09xxxxxxxx"
                   value={form.phone}
                   onChange={handleChange}
-                  required
+                  maxLength={10}
                   dir="ltr"
                   className={fieldInput}
                 />
@@ -275,7 +313,6 @@ export default function Signup() {
                 placeholder="كلمة المرور"
                 value={form.password}
                 onChange={handleChange}
-                required
                 dir="ltr"
                 className={fieldInput}
               />
@@ -334,9 +371,10 @@ export default function Signup() {
                     type="tel"
                     name="emergencyContactPhone"
                     autoComplete="off"
-                    placeholder="رقم الهاتف"
+                    placeholder="09xxxxxxxx"
                     value={form.emergencyContactPhone}
                     onChange={handleChange}
+                    maxLength={10}
                     dir="ltr"
                     className={fieldInput}
                   />

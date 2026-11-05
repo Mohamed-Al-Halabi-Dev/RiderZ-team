@@ -3,6 +3,7 @@ import { getToken } from "../lib/auth";
 
 // ✅ الرابط الجديد للباك إند على الاستضافة
 const BACKEND_URL = "https://mohameddev12-001-site1.ftempurl.com";
+// const BACKEND_URL = "https://localhost:7063";
 
 const api = axios.create({
   baseURL: BACKEND_URL,
