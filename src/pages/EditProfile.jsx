@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 const inputClass =
   "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-[14px] font-semibold text-white placeholder:text-white/25 outline-none transition focus:border-[#F9EA02]/50 focus:ring-2 focus:ring-[#F9EA02]/20";
 const labelClass =
@@ -180,13 +180,11 @@ export default function EditProfile() {
     e.preventDefault();
     setStatus(null);
 
-    // ✅ التحقق اليدوي من الحقول (بدل رسائل المتصفح البشعة)
     if (!form.firstName.trim() || !form.lastName.trim()) {
       setStatus({ type: "error", message: "الاسم الأول واسم العائلة مطلوبان" });
       return;
     }
 
-    // ✅ التحقق من رقم الهاتف الأساسي
     const phoneRegex = /^09\d{8}$/;
     if (!form.phone.trim() || !phoneRegex.test(form.phone.trim())) {
       setStatus({
@@ -196,7 +194,6 @@ export default function EditProfile() {
       return;
     }
 
-    // ✅ التحقق من رقم هاتف الطوارئ (إذا تم إدخاله)
     if (form.emergencyContactPhone.trim() && !phoneRegex.test(form.emergencyContactPhone.trim())) {
       setStatus({
         type: "error",
@@ -268,23 +265,7 @@ export default function EditProfile() {
   }
 
   return (
-    <main
-      dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-[#08080c] pb-28 pt-6 text-white"
-    >
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
+    <main dir="rtl" className="relative min-h-screen pb-28 pt-6 text-white">
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <Link
@@ -297,7 +278,6 @@ export default function EditProfile() {
           <span className="w-20" />
         </div>
 
-        {/* ✅ أضفنا noValidate عشان نلغي رسائل المتصفح الافتراضية */}
         <form onSubmit={handleSave} noValidate className="space-y-4">
           <div className={`${glass} overflow-hidden`}>
             <div className="relative h-40 w-full bg-gradient-to-br from-[#F9EA02]/30 via-purple-500/20 to-cyan-400/10 sm:h-52">
@@ -592,7 +572,7 @@ export default function EditProfile() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-rose-500/25 bg-rose-500/[0.06] p-5 backdrop-blur-2xl shadow-xl shadow-black/40 sm:p-6">
+          <div className="rounded-3xl border border-rose-500/25 bg-rose-500/[0.06] p-5 backdrop-blur-md shadow-xl shadow-black/40 sm:p-6">
             <h2 className="mb-4 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-rose-400">
               <AlertTriangle size={11} /> جهة الاتصال للطوارئ
             </h2>
@@ -646,7 +626,7 @@ export default function EditProfile() {
           )}
 
           <div className="sticky bottom-4 z-10">
-            <div className="flex gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a]/85 p-1.5 shadow-2xl shadow-black/60 backdrop-blur-2xl">
+            <div className="flex gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a]/90 p-1.5 shadow-2xl shadow-black/60 backdrop-blur-md">
               <Link
                 to="/profile"
                 className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 py-3 text-[12px] font-bold text-white/70 transition hover:bg-white/10 hover:text-white"

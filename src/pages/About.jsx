@@ -12,8 +12,9 @@ import {
 
 import heroTeam from "../assets/Hero-team-cropped.webp";
 
+// ✅ خففنا الـ blur
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const SECTIONS = [
   { id: "who-we-are", number: "01", label: "من نحن", icon: Heart },
@@ -21,8 +22,9 @@ const SECTIONS = [
   { id: "team-rules", number: "03", label: "قوانين الفريق", icon: Shield },
 ];
 
-const WHO_WE_ARE = ["RiderZ فريق دراجات تأسس عام 2017, وبدأ رحلته على مواقع تواصل الأجتماعي عام 2021",
-  "بدأنا بمجموعة من الأصدقاء يجمعهم شغف واحد... واليوم أصبحنا عائلة تضم كل من يعشق ركوب الدراجات."
+const WHO_WE_ARE = [
+  "RiderZ فريق دراجات تأسس عام 2017, وبدأ رحلته على مواقع تواصل الأجتماعي عام 2021",
+  "بدأنا بمجموعة من الأصدقاء يجمعهم شغف واحد... واليوم أصبحنا عائلة تضم كل من يعشق ركوب الدراجات.",
 ];
 
 const GOALS = [
@@ -73,24 +75,8 @@ export default function About() {
   ];
 
   return (
-    <main
-      dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-[#08080c] text-white"
-    >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-        <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-      </div>
-
+    // ✅ شلنا الخلفية المكررة
+    <main dir="rtl" className="relative min-h-screen text-white">
       <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
         <Link
           to="/"
@@ -101,7 +87,8 @@ export default function About() {
 
         <section className="grid gap-4 lg:grid-cols-2">
           <div className={`${glass} relative overflow-hidden p-6 sm:p-10`}>
-            <div className="pointer-events-none absolute -start-16 -top-16 size-48 rounded-full bg-[#F9EA02]/20 blur-3xl" />
+            {/* ✅ استبدلنا blur-3xl بـ radial-gradient */}
+            <div className="pointer-events-none absolute -start-16 -top-16 size-48 rounded-full bg-[radial-gradient(circle,rgba(249,234,2,0.2),transparent_70%)]" />
             <div className="relative">
               <p className="font-mono text-[10px] font-black uppercase tracking-[0.3em] text-[#F9EA02]">
                 RiderZ Team
@@ -110,16 +97,13 @@ export default function About() {
                 عن <span className="text-[#F9EA02]">الفريق</span>
               </h1>
               <p className="mt-5 max-w-md text-sm font-semibold leading-relaxed text-white/60 sm:text-base">
-                صفحة واحدة تجمع من نحن، أهدافنا، وقوانين الفريق — بأسلوب 
-                واضح وسهل.
+                صفحة واحدة تجمع من نحن، أهدافنا، وقوانين الفريق — بأسلوب واضح
+                وسهل.
               </p>
               <div className="mt-8 grid grid-cols-3 gap-2 border-t border-white/10 pt-6">
                 {STATS.map(({ icon: Icon, value, label }) => (
                   <div key={label} className="text-center">
-                    <Icon
-                      size={20}
-                      className="mx-auto mb-2 text-[#F9EA02]"
-                    />
+                    <Icon size={20} className="mx-auto mb-2 text-[#F9EA02]" />
                     <p
                       dir="ltr"
                       className="font-mono text-xl font-black text-[#F9EA02] sm:text-2xl"
@@ -149,6 +133,9 @@ export default function About() {
             <img
               src={heroTeam}
               alt="فريق RiderZ"
+              width={400}
+              height={400}
+              fetchPriority="high"
               className="relative w-full max-w-sm object-contain drop-shadow-2xl [mask-image:linear-gradient(to_bottom,#000_85%,transparent_100%)] sm:max-w-md"
             />
           </div>

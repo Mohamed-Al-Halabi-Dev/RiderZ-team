@@ -1,11 +1,12 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_URL } from "../config/api";
 import { ArrowRight, Search, Trophy, Crown, X, ChevronLeft } from "lucide-react";
-import { API_URL } from "../config/api";
 import Seo from "../components/Seo";
 
-const glass = "rounded-2xl border bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+// ✅ خففنا الـ blur وضبطنا الـ border
+const glass =
+  "rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const fixUrl = (url) => {
   if (!url) return null;
@@ -21,13 +22,18 @@ export default function Leaderboard() {
 
   useEffect(() => {
     const ctrl = new AbortController();
-    axios.get(`${API_URL}/api/users/leaderboard`, { signal: ctrl.signal })
+    api
+      .get("/api/users/leaderboard", { signal: ctrl.signal })
       .then((res) => {
         const data = res.data?.data ?? res.data;
         setUsers(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
+          setLoading(false);
+        }
+      });
     return () => ctrl.abort();
   }, []);
 
@@ -44,30 +50,13 @@ export default function Leaderboard() {
 
   return (
     <>
-      <Seo 
-        title="لوحة الصدارة" 
+      <Seo
+        title="لوحة الصدارة"
         description="ترتيب أفضل راكبي الدراجات في RiderZ حسب المسافة المقطوعة. تحدّى نفسك وتصدّر القائمة."
-        canonicalPath="/leaderboard" 
+        canonicalPath="/leaderboard"
       />
-      <main dir="rtl" className="relative min-h-screen overflow-hidden bg-[#08080c] text-white">
-
-        {/* ═════ خلفية الشبكة + التوهجات ═════ */}
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-          <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-        </div>
-
+      <main dir="rtl" className="relative min-h-screen overflow-hidden text-white">
         <div className="relative mx-auto max-w-3xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
-
           {/* ═════ Header ═════ */}
           <div className="mb-8">
             <Link
@@ -134,7 +123,6 @@ export default function Leaderboard() {
               ))}
             </div>
           )}
-
         </div>
       </main>
     </>
@@ -142,9 +130,9 @@ export default function Leaderboard() {
 }
 
 /* ═══════════════════════════════════════════════
-   Row - صف زجاجي
+   Row - صف زجاجي (مع memo)
 ═══════════════════════════════════════════════ */
-function Row({ user, rank }) {
+const Row = memo(function Row({ user, rank }) {
   const isTop1 = rank === 1;
   const isTop2 = rank === 2;
   const isTop3 = rank === 3;
@@ -155,26 +143,26 @@ function Row({ user, rank }) {
   const borderClass = isTop1
     ? "border-[#F9EA02]/40"
     : isTop2
-    ? "border-gray-300/30"
-    : isTop3
-    ? "border-amber-600/30"
-    : "border-white/[0.07]";
+      ? "border-gray-300/30"
+      : isTop3
+        ? "border-amber-600/30"
+        : "border-white/[0.07]";
 
   const rankColor = isTop1
     ? "text-[#F9EA02]"
     : isTop2
-    ? "text-gray-200"
-    : isTop3
-    ? "text-amber-500"
-    : "text-white/30";
+      ? "text-gray-200"
+      : isTop3
+        ? "text-amber-500"
+        : "text-white/30";
 
   const ringClass = isTop1
     ? "ring-2 ring-[#F9EA02]/60"
     : isTop2
-    ? "ring-2 ring-gray-300/50"
-    : isTop3
-    ? "ring-2 ring-amber-600/50"
-    : "ring-1 ring-white/10";
+      ? "ring-2 ring-gray-300/50"
+      : isTop3
+        ? "ring-2 ring-amber-600/50"
+        : "ring-1 ring-white/10";
 
   return (
     <Link
@@ -234,4 +222,4 @@ function Row({ user, rank }) {
       <ChevronLeft size={16} className="hidden shrink-0 text-white/20 transition group-hover:text-[#F9EA02] sm:block" />
     </Link>
   );
-}
+});

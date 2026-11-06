@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { MapPin, Mail, ArrowUpRight } from "lucide-react";
 
@@ -14,25 +15,13 @@ const IconFacebook = ({ size = 16, ...props }) => (
   </svg>
 );
 
-const glass = "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+// ✅ خففنا الـ blur
+const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
-export default function Footer() {
+function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-[#08080c] text-white">
-      {/* خلفية متوهجة + شبكة */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -start-40 size-[400px] rounded-full bg-[#F9EA02]/10 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[400px] rounded-full bg-purple-500/10 blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
+    // ✅ شلنا bg-[#08080c] عشان PageBackground تظهر من ورا
+    <footer className="relative overflow-hidden text-white">
       <div className="relative border-t border-white/10">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#F9EA02]/50 to-transparent" />
       </div>
@@ -49,7 +38,7 @@ export default function Footer() {
                 height={48}
                 loading="lazy"
                 decoding="async"
-                className="h-12 w-auto object-contain transition duration-300 group-hover:scale-105"
+                className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-white/50">
@@ -58,11 +47,13 @@ export default function Footer() {
 
             <div className="mt-6 flex gap-2">
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-                 className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:border-[#E4405F]/40 hover:bg-[#E4405F]/10 hover:text-[#E4405F]">
+                 aria-label="Instagram"
+                 className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition-colors hover:border-[#E4405F]/40 hover:bg-[#E4405F]/10 hover:text-[#E4405F]">
                 <IconInstagram size={16} />
               </a>
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-                 className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:border-[#1877F2]/40 hover:bg-[#1877F2]/10 hover:text-[#1877F2]">
+                 aria-label="Facebook"
+                 className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition-colors hover:border-[#1877F2]/40 hover:bg-[#1877F2]/10 hover:text-[#1877F2]">
                 <IconFacebook size={16} />
               </a>
             </div>
@@ -73,21 +64,21 @@ export default function Footer() {
             <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-[#F9EA02]">روابط سريعة</h3>
             <ul className="space-y-2.5">
               <li>
-                <Link to="/" className="group flex items-center gap-1.5 text-sm text-white/60 transition hover:text-white">
+                <Link to="/" className="group flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white">
                   الرئيسية
-                  <ArrowUpRight size={12} className="opacity-0 transition group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <ArrowUpRight size={12} className="opacity-0 transition-[opacity,transform] group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </li>
               <li>
-                <Link to="/rides" className="group flex items-center gap-1.5 text-sm text-white/60 transition hover:text-white">
+                <Link to="/rides" className="group flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white">
                   الجولات
-                  <ArrowUpRight size={12} className="opacity-0 transition group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <ArrowUpRight size={12} className="opacity-0 transition-[opacity,transform] group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </li>
               <li>
-                <Link to="/signup" className="group flex items-center gap-1.5 text-sm text-white/60 transition hover:text-white">
+                <Link to="/signup" className="group flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white">
                   انضم إلينا
-                  <ArrowUpRight size={12} className="opacity-0 transition group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <ArrowUpRight size={12} className="opacity-0 transition-[opacity,transform] group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </li>
             </ul>
@@ -98,21 +89,21 @@ export default function Footer() {
             <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-[#F9EA02]">حسابي</h3>
             <ul className="space-y-2.5">
               <li>
-                <Link to="/login" className="group flex items-center gap-1.5 text-sm text-white/60 transition hover:text-white">
+                <Link to="/login" className="group flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white">
                   تسجيل الدخول
-                  <ArrowUpRight size={12} className="opacity-0 transition group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <ArrowUpRight size={12} className="opacity-0 transition-[opacity,transform] group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </li>
               <li>
-                <Link to="/profile" className="group flex items-center gap-1.5 text-sm text-white/60 transition hover:text-white">
+                <Link to="/profile" className="group flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white">
                   الملف الشخصي
-                  <ArrowUpRight size={12} className="opacity-0 transition group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <ArrowUpRight size={12} className="opacity-0 transition-[opacity,transform] group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </li>
               <li>
-                <Link to="/bookings/my" className="group flex items-center gap-1.5 text-sm text-white/60 transition hover:text-white">
+                <Link to="/bookings/my" className="group flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white">
                   حجوزاتي
-                  <ArrowUpRight size={12} className="opacity-0 transition group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <ArrowUpRight size={12} className="opacity-0 transition-[opacity,transform] group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </li>
             </ul>
@@ -154,7 +145,7 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* ✅ Developed by */}
+        {/* Developed by */}
         <p
           dir="ltr"
           className="mt-4 text-center text-xs font-medium text-white/35"
@@ -164,7 +155,7 @@ export default function Footer() {
             href="https://github.com/mohamed-alhalabi"
             target="_blank"
             rel="noopener noreferrer"
-            className="-mx-2 -my-3 inline-flex min-h-11 items-center rounded-sm px-2 font-medium text-white/60 underline underline-offset-2 transition-colors hover:text-[#F9EA02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9EA02]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#08080c]"
+            className="-mx-2 -my-3 inline-flex min-h-11 items-center rounded-sm px-2 font-medium text-white/60 underline underline-offset-2 transition-colors hover:text-[#F9EA02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9EA02]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             Mohamed Al-Halabi
           </a>
@@ -173,3 +164,6 @@ export default function Footer() {
     </footer>
   );
 }
+
+// ✅ memo عشان ما ترجع ترسم لما الـ auth يتغير
+export default memo(Footer);

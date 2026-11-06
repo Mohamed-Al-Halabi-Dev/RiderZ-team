@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
 import { ShieldOff, ArrowRight } from "lucide-react";
 
+// ✅ خففنا الـ blur
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 export default function Unauthorized() {
   return (
+    // ✅ شلنا bg-[#08080c] عشان PageBackground تظهر من ورا
     <main
       dir="rtl"
-      className="grid min-h-screen place-items-center bg-[#08080c] px-4 text-white"
+      className="grid min-h-screen place-items-center px-4 text-white"
     >
       <div className={`${glass} w-full max-w-md p-8 text-center`}>
         <div className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-rose-500/15 text-rose-400">

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 const inputClass =
   "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white placeholder:text-white/30 outline-none transition focus:border-[#F9EA02]/50 focus:ring-2 focus:ring-[#F9EA02]/20";
 const labelClass = "mb-1.5 block text-[11px] font-bold uppercase text-white/50";
@@ -89,7 +89,6 @@ export default function AdminRideForm() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      // ✅ المسار الصح: /api/images/{folder}
       const res = await api.post("/api/images/rides", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -140,24 +139,7 @@ export default function AdminRideForm() {
   }
 
   return (
-    <main
-      dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-[#08080c] text-white"
-    >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-        <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-      </div>
-
+    <main dir="rtl" className="relative min-h-screen text-white">
       <div className="relative mx-auto max-w-3xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
         <Link
           to="/admin/rides"
@@ -358,6 +340,7 @@ export default function AdminRideForm() {
                     {form.imageUrl ? (
                       <img
                         src={form.imageUrl}
+                        alt="Ride preview"
                         className="size-full object-cover"
                       />
                     ) : (

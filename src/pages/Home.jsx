@@ -17,7 +17,7 @@ import heroTeam from "../assets/Hero-team-cropped.webp";
 import Seo from "../components/Seo";
 
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const fixUrl = (url) => {
   if (!url) return "";
@@ -95,30 +95,11 @@ export default function Home() {
     <>
       <Seo
         title="فريق الدراجات في سوريا"
-        description= "فريق RiderZ  فريق دراجات مجتمعي في سوريا، نعمل على نشر ثقافة ركوب الدراجة الهوائية، وننظم جولات ومغامرات على الطريق."
+        description="فريق RiderZ فريق دراجات مجتمعي في سوريا، نعمل على نشر ثقافة ركوب الدراجة الهوائية، وننظم جولات ومغامرات على الطريق."
         canonicalPath="/"
       />
 
-      <main
-        dir="rtl"
-        className="relative min-h-screen overflow-x-hidden bg-[#08080c] text-white"
-      >
-        {/* الخلفية الثابتة */}
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-          <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#08080c_75%)]" />
-        </div>
-
+      <main dir="rtl" className="relative min-h-screen overflow-x-hidden text-white">
         {/* 1. الهيرو */}
         <section className="relative flex min-h-screen items-center px-4 py-24 sm:px-6">
           <div className="mx-auto w-full max-w-6xl">
@@ -174,7 +155,8 @@ export default function Home() {
               </div>
 
               <div className="order-2 relative">
-                <div className="absolute inset-x-0 bottom-0 h-2/3 animate-pulse bg-[radial-gradient(ellipse_at_50%_100%,rgba(249,234,2,0.3),transparent_70%)]" />
+                {/* ✅ شلنا animate-pulse من هون لتخفيف إعادة الرسم */}
+                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,rgba(249,234,2,0.3),transparent_70%)]" />
                 <img
                   src={heroTeam}
                   alt="فريق RiderZ"
@@ -442,7 +424,9 @@ export default function Home() {
           <div className="mx-auto max-w-6xl">
             <div className={`${glass} relative overflow-hidden p-8 sm:p-14`}>
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#F9EA02]/10 via-transparent to-purple-500/10" />
-              <div className="pointer-events-none absolute -end-20 -top-20 size-[300px] rounded-full bg-[#F9EA02]/20 blur-[100px]" />
+
+              {/* ✅ استبدلنا blur-[100px] بـ radial-gradient خفيف */}
+              <div className="pointer-events-none absolute -end-20 -top-20 size-[300px] rounded-full bg-[radial-gradient(circle,rgba(249,234,2,0.2),transparent_70%)]" />
 
               <div className="relative z-10 flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-start">
                 <div>
@@ -532,12 +516,12 @@ const PodiumCard = memo(function PodiumCard({ user, rank, height, isWinner }) {
       className={`${glass} relative flex w-full max-w-[160px] flex-col items-center justify-end overflow-hidden pb-5 pt-10 sm:max-w-[200px] ${height} ${style.glow} ${style.border}`}
     >
       <div
-        className={`absolute inset-x-0 top-0 h-1/2 opacity-40 blur-3xl ${
+        className={`absolute inset-x-0 top-0 h-1/2 opacity-40 ${
           isWinner
-            ? "bg-[#F9EA02]"
+            ? "bg-[radial-gradient(ellipse_at_top,rgba(249,234,2,0.8),transparent_70%)]"
             : rank === 2
-              ? "bg-gray-300"
-              : "bg-amber-600"
+              ? "bg-[radial-gradient(ellipse_at_top,rgba(200,200,200,0.8),transparent_70%)]"
+              : "bg-[radial-gradient(ellipse_at_top,rgba(180,83,9,0.8),transparent_70%)]"
         }`}
       />
 
@@ -666,7 +650,7 @@ const RidePreviewCard = memo(function RidePreviewCard({ ride }) {
       </div>
 
       <div className="absolute bottom-0 w-full p-5">
-        <span className="rounded-full bg-[#F9EA02]/20 px-2.5 py-0.5 text-[10px] font-black text-[#F9EA02] backdrop-blur-md">
+        <span className="rounded-full bg-[#F9EA02]/20 px-2.5 py-0.5 text-[10px] font-black text-[#F9EA02] backdrop-blur-sm">
           {ride.level || "مبتدئ"}
         </span>
 
@@ -677,7 +661,7 @@ const RidePreviewCard = memo(function RidePreviewCard({ ride }) {
         <p className="mt-1 text-xs text-white/60">{displayDate}</p>
       </div>
 
-      <div className="absolute end-5 top-5 grid size-9 place-items-center rounded-full bg-black/50 text-white/70 backdrop-blur-md transition group-hover:bg-[#F9EA02] group-hover:text-black">
+      <div className="absolute end-5 top-5 grid size-9 place-items-center rounded-full bg-black/50 text-white/70 backdrop-blur-sm transition group-hover:bg-[#F9EA02] group-hover:text-black">
         <ArrowUpRight size={16} />
       </div>
     </Link>
@@ -687,9 +671,10 @@ const RidePreviewCard = memo(function RidePreviewCard({ ride }) {
 const FeatureCard = memo(function FeatureCard({ icon: Icon, title, desc }) {
   return (
     <div
-      className={`${glass} group relative overflow-hidden p-6 transition hover:border-[#F9EA02]/30 hover:bg-white/[0.06]`}
+      // ✅ غيرنا transition لـ transition-colors عشان ما يعمل repaint للـ backdrop
+      className={`${glass} group relative overflow-hidden p-6 transition-colors hover:border-[#F9EA02]/30 hover:bg-white/[0.08]`}
     >
-      <div className="mb-4 inline-flex size-12 items-center justify-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02] transition group-hover:scale-110">
+      <div className="mb-4 inline-flex size-12 items-center justify-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02] transition-transform group-hover:scale-110">
         <Icon size={24} />
       </div>
       <h3 className="text-xl font-black text-white">{title}</h3>

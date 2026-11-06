@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Link, useParams } from "react-router-dom";
 import api, { API_URL } from "../config/api";
 import {
@@ -15,7 +15,115 @@ import {
 } from "lucide-react";
 
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
+
+// ✅ خلفية كرت الحجز (بدون blur)
+const cardBg =
+  "rounded-3xl border border-white/10 bg-[#0d0d10]/80 shadow-lg shadow-black/40";
+
+const BookingRow = memo(function BookingRow({
+  booking: b,
+  isProcessing,
+  onAction,
+  onAttendance,
+  onViewImage,
+}) {
+  const getReceiptUrl = (url) =>
+    !url ? null : url.startsWith("/") ? `${API_URL}${url}` : url;
+
+  const status = b.attendance_Status;
+  let statusColor = "bg-rose-500/15 text-rose-400";
+  let statusLabel = "ملغي";
+
+  if (status === "Booked" || status === "Attended") {
+    statusColor = "bg-emerald-500/15 text-emerald-400";
+    statusLabel = status === "Booked" ? "مؤكد" : "حضر";
+  } else if (status === "Review") {
+    statusColor = "bg-amber-500/15 text-amber-400";
+    statusLabel = "قيد المراجعة";
+  } else if (status === "Absent") {
+    statusColor = "bg-orange-500/15 text-orange-400";
+    statusLabel = "غائب";
+  }
+
+  return (
+    <div
+      className={`${cardBg} flex flex-col items-center justify-between gap-4 p-4 transition hover:border-white/20 sm:flex-row sm:p-5`}
+    >
+      <div className="flex w-full items-center gap-4 sm:w-auto">
+        <div className="grid size-12 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-white/50">
+          <User size={20} />
+        </div>
+        <div>
+          <p className="text-base font-black">
+            {b.fullName || `مستخدم #${b.user_Id}`}
+          </p>
+          <p dir="ltr" className="text-end text-xs font-bold text-white/50">
+            {b.phone || "لا يوجد رقم"}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex w-full items-center justify-between gap-3 border-t border-white/5 pt-3 sm:w-auto sm:justify-end sm:border-t-0 sm:pt-0">
+        <span
+          className={`rounded-full px-3 py-1.5 text-[10px] font-black ${statusColor}`}
+        >
+          {statusLabel}
+        </span>
+
+        {b.receipt_Image_URL && (
+          <button
+            onClick={() => onViewImage(getReceiptUrl(b.receipt_Image_URL))}
+            className="grid size-9 place-items-center rounded-lg border border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
+            title="عرض الإشعار"
+          >
+            <FileImage size={16} />
+          </button>
+        )}
+
+        {status === "Review" && (
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => onAction(b.id, "approve")}
+              disabled={isProcessing}
+              className="grid size-9 place-items-center rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 disabled:opacity-50"
+              title="موافقة"
+            >
+              <CheckCircle2 size={16} />
+            </button>
+            <button
+              onClick={() => onAction(b.id, "reject")}
+              disabled={isProcessing}
+              className="grid size-9 place-items-center rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 disabled:opacity-50"
+              title="رفض"
+            >
+              <XCircle size={16} />
+            </button>
+          </div>
+        )}
+
+        {status === "Booked" && (
+          <div className="flex gap-1.5 border-s border-white/10 ps-3">
+            <button
+              onClick={() => onAttendance(b.id, true)}
+              disabled={isProcessing}
+              className="flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-1.5 text-xs font-bold text-emerald-400 transition hover:bg-emerald-500/20 disabled:opacity-50"
+            >
+              حضر
+            </button>
+            <button
+              onClick={() => onAttendance(b.id, false)}
+              disabled={isProcessing}
+              className="flex items-center gap-1 rounded-lg bg-rose-500/10 px-2 py-1.5 text-xs font-bold text-rose-400 transition hover:bg-rose-500/20 disabled:opacity-50"
+            >
+              غائب
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
 
 export default function AdminRideDetails() {
   const { id } = useParams();
@@ -89,9 +197,6 @@ export default function AdminRideDetails() {
     }
   };
 
-  const getReceiptUrl = (url) =>
-    !url ? null : url.startsWith("/") ? `${API_URL}${url}` : url;
-
   if (loading) {
     return (
       <div className="grid h-screen place-items-center bg-[#08080c]">
@@ -101,24 +206,7 @@ export default function AdminRideDetails() {
   }
 
   return (
-    <main
-      dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-[#08080c] text-white"
-    >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-        <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-      </div>
-
+    <main dir="rtl" className="relative min-h-screen text-white">
       <div className="relative mx-auto max-w-4xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
         <Link
           to="/admin/rides"
@@ -156,104 +244,14 @@ export default function AdminRideDetails() {
         ) : (
           <div className="space-y-3">
             {bookings.map((b) => (
-              <div
+              <BookingRow
                 key={b.id}
-                className={`${glass} flex flex-col items-center justify-between gap-4 p-4 transition hover:border-white/20 sm:flex-row sm:p-5`}
-              >
-                <div className="flex w-full items-center gap-4 sm:w-auto">
-                  <div className="grid size-12 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-white/50">
-                    <User size={20} />
-                  </div>
-                  <div>
-                    <p className="text-base font-black">
-                      {b.fullName || `مستخدم #${b.user_Id}`}
-                    </p>
-                    <p
-                      dir="ltr"
-                      className="text-end text-xs font-bold text-white/50"
-                    >
-                      {b.phone || "لا يوجد رقم"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex w-full items-center justify-between gap-3 border-t border-white/5 pt-3 sm:w-auto sm:justify-end sm:border-t-0 sm:pt-0">
-                  <span
-                    className={`rounded-full px-3 py-1.5 text-[10px] font-black ${
-                      b.attendance_Status === "Booked" ||
-                      b.attendance_Status === "Attended"
-                        ? "bg-emerald-500/15 text-emerald-400"
-                        : b.attendance_Status === "Review"
-                          ? "bg-amber-500/15 text-amber-400"
-                          : b.attendance_Status === "Absent"
-                            ? "bg-orange-500/15 text-orange-400"
-                            : "bg-rose-500/15 text-rose-400"
-                    }`}
-                  >
-                    {b.attendance_Status === "Booked"
-                      ? "مؤكد"
-                      : b.attendance_Status === "Attended"
-                        ? "حضر"
-                        : b.attendance_Status === "Absent"
-                          ? "غائب"
-                          : b.attendance_Status === "Review"
-                            ? "قيد المراجعة"
-                            : "ملغي"}
-                  </span>
-
-                  {b.receipt_Image_URL && (
-                    <button
-                      onClick={() =>
-                        setViewImage(getReceiptUrl(b.receipt_Image_URL))
-                      }
-                      className="grid size-9 place-items-center rounded-lg border border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
-                      title="عرض الإشعار"
-                    >
-                      <FileImage size={16} />
-                    </button>
-                  )}
-
-                  {b.attendance_Status === "Review" && (
-                    <div className="flex gap-1.5">
-                      <button
-                        onClick={() => handleAction(b.id, "approve")}
-                        disabled={processingId === b.id}
-                        className="grid size-9 place-items-center rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 disabled:opacity-50"
-                        title="موافقة"
-                      >
-                        <CheckCircle2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleAction(b.id, "reject")}
-                        disabled={processingId === b.id}
-                        className="grid size-9 place-items-center rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 disabled:opacity-50"
-                        title="رفض"
-                      >
-                        <XCircle size={16} />
-                      </button>
-                    </div>
-                  )}
-
-                  {b.attendance_Status === "Booked" && (
-                    <div className="flex gap-1.5 border-s border-white/10 ps-3">
-                      <button
-                        onClick={() => handleAttendance(b.id, true)}
-                        disabled={processingId === b.id}
-                        className="flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-1.5 text-xs font-bold text-emerald-400 transition hover:bg-emerald-500/20 disabled:opacity-50"
-                      >
-                        حضر
-                      </button>
-                      <button
-                        onClick={() => handleAttendance(b.id, false)}
-                        disabled={processingId === b.id}
-                        className="flex items-center gap-1 rounded-lg bg-rose-500/10 px-2 py-1.5 text-xs font-bold text-rose-400 transition hover:bg-rose-500/20 disabled:opacity-50"
-                      >
-                        غائب
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
+                booking={b}
+                isProcessing={processingId === b.id}
+                onAction={handleAction}
+                onAttendance={handleAttendance}
+                onViewImage={setViewImage}
+              />
             ))}
           </div>
         )}

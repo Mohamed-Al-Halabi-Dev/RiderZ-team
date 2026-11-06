@@ -39,7 +39,8 @@ function formatDuration(minutes) {
   return `${mins} دقيقة`;
 }
 
-const glass = "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+// ✅ خففنا الـ blur
+const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 export default function RideDetails() {
   const { id } = useParams();
@@ -103,11 +104,11 @@ export default function RideDetails() {
   };
 
   if (status === "loading") {
-    return <div className="grid h-screen place-items-center bg-[#08080c]"><span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" /></div>;
+    return <div className="grid h-screen place-items-center"><span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" /></div>;
   }
 
   if (status === "error") {
-    return <div className="grid h-screen place-items-center bg-[#08080c] text-white"><Link to="/rides" className="text-sm font-bold text-[#F9EA02] hover:underline">← رجوع للجولات</Link></div>;
+    return <div className="grid h-screen place-items-center text-white"><Link to="/rides" className="text-sm font-bold text-[#F9EA02] hover:underline">← رجوع للجولات</Link></div>;
   }
 
   const level = getLevel(ride.level);
@@ -120,32 +121,30 @@ export default function RideDetails() {
     <>
       <Seo title={`${ride.title} | جولات RiderZ`} description={seoDescription} canonicalPath={`/rides/${ride.id}`} image={imgFor(ride)} />
 
-      {/* ✅ رجعنا main زي ما كان بالزبط، وشلنا overflow-x-hidden عشان ما نكسر الـ sticky */}
-      <main dir="rtl" className="relative min-h-screen bg-[#08080c] pb-20 pt-24 text-white sm:pt-28">
-        
-        {/* ✅ الإضاءة الخلفية رجعت absolute زي الأصل */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-          <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-        </div>
+      {/* ✅ شلنا bg-[#08080c] عشان PageBackground تظهر من ورا */}
+      <main dir="rtl" className="relative min-h-screen pb-20 pt-24 text-white sm:pt-28">
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-6 flex items-center gap-2 text-sm text-white/40">
-            <Link to="/rides" className="transition hover:text-white">الجولات</Link>
+            <Link to="/rides" className="transition-colors hover:text-white">الجولات</Link>
             <span>/</span>
             <span className="truncate font-bold text-white">{ride.title}</span>
           </div>
 
-          {/* ✅ التعديل السحري الوحيد: minmax(0,1fr) بدل 1fr لمنع التمدد */}
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-            
-            {/* ✅ ضفنا min-w-0 عشان نمنع العناصر الداخلية من تمديد الصفحة */}
+
             <div className="min-w-0 space-y-6">
               <div className={`${glass} overflow-hidden p-2`}>
                 <div className="aspect-video overflow-hidden rounded-2xl">
-                  <img src={imgFor(ride)} alt={ride.title} className="size-full object-cover" />
+                  <img
+                    src={imgFor(ride)}
+                    alt={ride.title}
+                    width={1200}
+                    height={675}
+                    fetchPriority="high"
+                    decoding="async"
+                    className="size-full object-cover"
+                  />
                 </div>
               </div>
 
@@ -154,18 +153,16 @@ export default function RideDetails() {
                   <span className={`rounded-md px-2.5 py-1 text-xs font-black ${rideStatus.bg} ${rideStatus.text}`}>{ride.status}</span>
                   <span className={`rounded-md px-2.5 py-1 text-xs font-black text-white ${level.bg}`}>{level.label}</span>
                 </div>
-                {/* ✅ رجعنا text-3xl زي الأصل */}
-                <h1 className="text-3xl font-black sm:text-4xl break-words">{ride.title}</h1>
+                <h1 className="break-words text-3xl font-black sm:text-4xl">{ride.title}</h1>
               </div>
 
               {ride.description && (
                 <div className={`${glass} p-6 sm:p-8`}>
                   <h2 className="mb-4 border-b border-white/10 pb-2 text-xl font-black">عن الجولة</h2>
-                  <p className="whitespace-pre-wrap text-sm leading-8 text-white/70 break-words">{ride.description}</p>
+                  <p className="whitespace-pre-wrap break-words text-sm leading-8 text-white/70">{ride.description}</p>
                 </div>
               )}
 
-              {/* ✅ المسار: حطينا الحاوية بـ overflow-hidden عشان نحبس السكرول جواها */}
               <div className={`${glass} p-6 sm:p-8`}>
                 <h2 className="mb-6 flex items-center gap-2 border-b border-white/10 pb-2 text-xl font-black">
                   <Navigation size={20} className="text-[#F9EA02]" /> مسار الرحلة
@@ -221,7 +218,6 @@ export default function RideDetails() {
               )}
             </div>
 
-            {/* ✅ ضفنا min-w-0 عشان ما يتأثر بالعناصر اللي جنبه */}
             <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
               <div className={`${glass} overflow-hidden`}>
                 <div className="space-y-2 border-b border-white/10 p-6">
@@ -248,7 +244,7 @@ export default function RideDetails() {
                     userBooking.statusBooking === "Review" ? (
                       <div className="space-y-2">
                         <div className="w-full rounded-xl border border-amber-500/30 bg-amber-500/10 py-3.5 text-center text-sm font-bold text-amber-400">حجزك قيد المراجعة</div>
-                        <button onClick={() => setShowCancelModal(true)} className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 py-2.5 text-xs font-black text-rose-400 transition hover:bg-rose-500/20"><XCircle size={14} /> إلغاء الحجز</button>
+                        <button onClick={() => setShowCancelModal(true)} className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 py-2.5 text-xs font-black text-rose-400 transition-colors hover:bg-rose-500/20"><XCircle size={14} /> إلغاء الحجز</button>
                       </div>
                     ) : userBooking.statusBooking === "Booked" ? (
                       <div className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 py-3.5 text-center text-sm font-bold text-emerald-400">أنت مسجل في هذه الجولة</div>
@@ -289,14 +285,13 @@ export default function RideDetails() {
   );
 }
 
-// ✅ تعديل مكون Detail: بس ضفنا min-w-0 و break-words عشان النص الطويل ما يمدد الشاشة
 function Detail({ icon: Icon, label, value, ltr }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 min-w-0">
+    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
       <Icon size={20} className="shrink-0 text-[#F9EA02]" />
       <div className="min-w-0">
         <p className="text-xs text-white/50">{label}</p>
-        <p dir={ltr ? "ltr" : "rtl"} className={`text-sm font-bold break-words ${ltr ? "font-mono" : ""}`}>
+        <p dir={ltr ? "ltr" : "rtl"} className={`break-words text-sm font-bold ${ltr ? "font-mono" : ""}`}>
           {value}
         </p>
       </div>

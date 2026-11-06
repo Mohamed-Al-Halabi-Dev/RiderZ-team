@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api, { API_URL } from "../config/api";
+import api from "../config/api";
 import {
   Calendar,
   ArrowLeft,
@@ -12,11 +12,9 @@ import {
 } from "lucide-react";
 import Seo from "../components/Seo";
 
+// ✅ خففنا الـ blur من 2xl لـ md
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
-
-const fixUrl = (url) =>
-  !url ? "" : url.startsWith("/") ? `${API_URL}${url}` : url;
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const STATUS_MAP = {
   Booked: {
@@ -36,8 +34,83 @@ const STATUS_MAP = {
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80";
 
+// ✅ بما إننا صرنا نستخدم api instance، ما منحتاج API_URL
 const imgFor = (url) =>
-  !url || url.includes("example.com") ? FALLBACK_IMG : fixUrl(url);
+  !url || url.includes("example.com") ? FALLBACK_IMG : url;
+
+// ✅ كرت الحجز كـ مكون memo منفصل
+const BookingCard = memo(function BookingCard({ booking, onCancel }) {
+  const info = STATUS_MAP[booking.statusBooking] ?? {
+    label: booking.statusBooking,
+    color: "text-white/60 bg-white/5 border-white/10",
+  };
+
+  return (
+    <div
+      className={`${glass} group overflow-hidden transition hover:border-white/20`}
+    >
+      <div className="flex flex-col sm:flex-row">
+        <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden sm:aspect-auto sm:h-auto sm:w-48">
+          <img
+            src={imgFor(booking.ima_Cover_Ride)}
+            alt={booking.rideName}
+            width={600}
+            height={338}
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover transition duration-500 group-hover:scale-105"
+            onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
+          />
+        </div>
+
+        <div className="flex flex-1 flex-col justify-between gap-4 p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h3 className="line-clamp-2 text-lg font-black leading-tight text-white">
+                {booking.rideName}
+              </h3>
+              <div className="mt-2 flex items-center gap-2 text-xs text-white/50">
+                <Calendar size={14} className="text-[#F9EA02]" />
+                <span>حُجز في: {booking.dateBooking}</span>
+              </div>
+            </div>
+            <span
+              className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-black ${info.color}`}
+            >
+              {info.label}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between gap-3 border-t border-white/5 pt-2">
+            <div className="flex items-baseline gap-1.5 font-mono">
+              <span className="text-xl font-black text-[#F9EA02]">
+                {booking.totalPrice}
+              </span>
+              <span className="text-[10px] font-bold text-white/40">ل.س</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {booking.statusBooking === "Review" && (
+                <button
+                  onClick={() => onCancel(booking)}
+                  className="flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-400 transition-colors hover:bg-rose-500/20"
+                >
+                  <XCircle size={12} /> إلغاء
+                </button>
+              )}
+              <Link
+                to={`/rides/${booking.rideId}`}
+                className="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-2 text-xs font-bold text-white/70 transition-colors hover:border-[#F9EA02]/40 hover:text-[#F9EA02]"
+              >
+                عرض الرحلة
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 export default function MyBookings() {
   const navigate = useNavigate();
@@ -113,26 +186,13 @@ export default function MyBookings() {
       <Seo title="حجوزاتي" description="حجوزاتي" noindex={true} />
       <main
         dir="rtl"
-        className="relative min-h-screen overflow-hidden bg-[#08080c] pb-20 pt-24 text-white sm:pt-28"
+        className="relative min-h-screen pb-20 pt-24 text-white sm:pt-28"
       >
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-        </div>
-
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
           <div className="mb-8">
             <Link
               to="/rides"
-              className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-white/50 transition hover:text-[#F9EA02]"
+              className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-white/50 transition-colors hover:text-[#F9EA02]"
             >
               <ArrowLeft size={16} className="rotate-180" />
               استكشف الجولات
@@ -169,83 +229,13 @@ export default function MyBookings() {
             </div>
           ) : (
             <div className="space-y-4">
-              {bookings.map((b, idx) => {
-                const info = STATUS_MAP[b.statusBooking] ?? {
-                  label: b.statusBooking,
-                  color: "text-white/60 bg-white/5 border-white/10",
-                };
-
-                return (
-                  <div
-                    key={`${b.rideId}-${idx}`}
-                    className={`${glass} group overflow-hidden transition hover:border-white/20`}
-                  >
-                    <div className="flex flex-col sm:flex-row">
-                      <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden sm:aspect-auto sm:h-auto sm:w-48">
-                        <img
-                          src={imgFor(b.ima_Cover_Ride)}
-                          alt={b.rideName}
-                          width={600}
-                          height={338}
-                          loading="lazy"
-                          decoding="async"
-                          className="size-full object-cover transition duration-500 group-hover:scale-105"
-                          onError={(e) =>
-                            (e.currentTarget.src = FALLBACK_IMG)
-                          }
-                        />
-                      </div>
-
-                      <div className="flex flex-1 flex-col justify-between gap-4 p-5">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="min-w-0 flex-1">
-                            <h3 className="line-clamp-2 text-lg font-black leading-tight text-white">
-                              {b.rideName}
-                            </h3>
-                            <div className="mt-2 flex items-center gap-2 text-xs text-white/50">
-                              <Calendar size={14} className="text-[#F9EA02]" />
-                              <span>حُجز في: {b.dateBooking}</span>
-                            </div>
-                          </div>
-                          <span
-                            className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-black ${info.color}`}
-                          >
-                            {info.label}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-3 border-t border-white/5 pt-2">
-                          <div className="flex items-baseline gap-1.5 font-mono">
-                            <span className="text-xl font-black text-[#F9EA02]">
-                              {b.totalPrice}
-                            </span>
-                            <span className="text-[10px] font-bold text-white/40">
-                              ل.س
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            {b.statusBooking === "Review" && (
-                              <button
-                                onClick={() => setBookingToCancel(b)}
-                                className="flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-400 transition hover:bg-rose-500/20"
-                              >
-                                <XCircle size={12} /> إلغاء
-                              </button>
-                            )}
-                            <Link
-                              to={`/rides/${b.rideId}`}
-                              className="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-2 text-xs font-bold text-white/70 transition hover:border-[#F9EA02]/40 hover:text-[#F9EA02]"
-                            >
-                              عرض الرحلة
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {bookings.map((b, idx) => (
+                <BookingCard
+                  key={`${b.rideId}-${idx}`}
+                  booking={b}
+                  onCancel={setBookingToCancel}
+                />
+              ))}
             </div>
           )}
         </div>

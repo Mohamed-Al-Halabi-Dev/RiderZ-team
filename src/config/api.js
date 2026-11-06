@@ -8,9 +8,7 @@ import {
   getRole,
 } from "../lib/auth";
 
-// ✅ الرابط الجديد للباك إند على الاستضافة
-const BACKEND_URL = "https://mohameddev12-001-site1.ftempurl.com";
-// const BACKEND_URL = "https://localhost:7063";
+
 
 const api = axios.create({ baseURL: BACKEND_URL });
 
@@ -43,7 +41,6 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // لا تعمل Refresh لطلبات الـ login أو الـ refresh نفسها
       if (
         originalRequest.url.includes("/api/auth/login") ||
         originalRequest.url.includes("/api/auth/refresh-token")
@@ -113,5 +110,5 @@ api.interceptors.response.use(
 
 export default api;
 
-export const API_URL = BACKEND_URL;
+export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export const PAGE_SIZE = 12;

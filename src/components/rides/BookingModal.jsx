@@ -55,7 +55,7 @@ function ReviewScreen({ onClose, totalPrice }) {
         <div className="mt-6 w-full max-w-xs">
           <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
             <div
-              className="h-full rounded-full bg-[#F9EA02] transition-all duration-300"
+              className="h-full rounded-full bg-[#F9EA02] transition-[width] duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -97,10 +97,7 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
   const [showTerms, setShowTerms] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  // ✅ 1. ضعنا النص هنا عشان يكون سهل التعديل
   const SHAM_CASH_DATA = "883d053990801470e29e47f226f03b32";
-  
-  // ✅ 2. ولدنا رابط الباركود ديناميكياً
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(SHAM_CASH_DATA)}`;
 
   const calculatePrice = (type) => {
@@ -201,7 +198,7 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
                 type="button"
                 onClick={onClose}
                 disabled={loading}
-                className="grid size-8 place-items-center rounded-full bg-white/5 text-white/50 transition hover:bg-white/10 hover:text-white disabled:opacity-50"
+                className="grid size-8 place-items-center rounded-full bg-white/5 text-white/50 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-50"
               >
                 <X size={16} strokeWidth={2.5} />
               </button>
@@ -215,7 +212,7 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
                     type="button"
                     disabled={loading}
                     onClick={() => setSelected(o.type)}
-                    className={`rounded-lg py-2.5 text-[11px] font-black transition ${
+                    className={`rounded-lg py-2.5 text-[11px] font-black transition-colors ${
                       selected === o.type
                         ? "bg-[#F9EA02] text-black shadow-sm"
                         : "text-white/50 hover:text-white"
@@ -251,7 +248,6 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
                   </p>
                 </div>
                 <div className="shrink-0 rounded-xl bg-white p-2">
-                  {/* ✅ 3. استخدمنا رابط الباركود الديناميكي هنا */}
                   <img
                     src={qrCodeUrl}
                     alt="Sham Cash QR"
@@ -279,7 +275,7 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading || loading}
-                  className={`flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed py-4 text-xs font-bold transition ${
+                  className={`flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed py-4 text-xs font-bold transition-colors ${
                     receiptUrl
                       ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
                       : "border-white/10 bg-white/[0.02] text-white/50 hover:border-[#F9EA02]/50 hover:text-[#F9EA02]"
@@ -334,8 +330,9 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
             className="absolute inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-4"
             onClick={() => !loading && setShowTerms(false)}
           >
+            {/* ✅ شلنا backdrop-blur-xl — bg-[#0a0a0a]/95 كافي */}
             <div
-              className="w-full max-w-sm rounded-t-[28px] border border-white/10 bg-[#0a0a0a]/95 pb-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl"
+              className="w-full max-w-sm rounded-t-[28px] border border-white/10 bg-[#0a0a0a]/95 pb-6 shadow-2xl sm:rounded-3xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-center py-3" aria-hidden="true">
@@ -391,7 +388,7 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
                   </li>
                 </ul>
 
-                <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition hover:bg-white/[0.05]">
+                <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-colors hover:bg-white/[0.05]">
                   <input
                     type="checkbox"
                     className="size-4 accent-[#F9EA02]"
@@ -418,7 +415,7 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
                   <button
                     onClick={() => setShowTerms(false)}
                     disabled={loading}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-bold text-white/70 transition hover:bg-white/10 disabled:opacity-50"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-bold text-white/70 transition-colors hover:bg-white/10 disabled:opacity-50"
                   >
                     إلغاء
                   </button>

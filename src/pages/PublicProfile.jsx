@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_URL } from "../config/api";
 import {
   ArrowRight, Route as RouteIcon, Bike as BikeIcon,
-  Shield, ArrowUpLeft, Trophy, X, // ✅ أضفنا أيقونة X
+  Shield, ArrowUpLeft, Trophy, X,
 } from "lucide-react";
 import Seo from "../components/Seo";
 
-import { API_URL } from "../config/api";
-
-const glass = "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+// ✅ خففنا الـ blur
+const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const fixUrl = (url) => {
   if (!url) return null;
@@ -56,15 +55,14 @@ export default function PublicProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  
-  // ✅ حالة (State) للتحكم بفتح وإغلاق نافذة الصورة
   const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
     const ctrl = new AbortController();
 
-    axios
-      .get(`${API_URL}/api/users/${username}/profile`, { signal: ctrl.signal })
+    // ✅ استخدمنا api بدل axios
+    api
+      .get(`/api/users/${username}/profile`, { signal: ctrl.signal })
       .then((res) => {
         const data = res.data?.data ?? res.data;
         if (!data) return setError(true);
@@ -124,33 +122,18 @@ export default function PublicProfile() {
         canonicalPath={`/leaderboard/${user.username}`}
         noindex={true}
       />
-      <main dir="rtl" className="relative min-h-screen overflow-hidden bg-[#08080c] text-white">
-
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-          <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-        </div>
+      <main dir="rtl" className="relative min-h-screen text-white">
+        {/* ✅ شلنا الخلفية المكررة */}
 
         <div className="relative mx-auto max-w-4xl px-4 pb-20 pt-24 sm:px-6 sm:pt-28">
-
           <Link
             to="/leaderboard"
-            className="mb-6 inline-flex items-center gap-1.5 text-sm font-bold text-white/50 transition hover:text-[#F9EA02]"
+            className="mb-6 inline-flex items-center gap-1.5 text-sm font-bold text-white/50 transition-colors hover:text-[#F9EA02]"
           >
             <ArrowRight size={14} /> رجوع للوحة الصدارة
           </Link>
 
           <div className={`${glass} overflow-hidden`}>
-
             <div className="relative h-36 w-full bg-gradient-to-br from-[#F9EA02]/20 via-purple-500/20 to-cyan-400/10 sm:h-48">
               {coverUrl && (
                 <img
@@ -160,7 +143,9 @@ export default function PublicProfile() {
                   height={400}
                   decoding="async"
                   className="absolute inset-0 size-full object-cover"
-                  onError={(e) => { e.currentTarget.style.display = "none"; }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/20 to-transparent" />
@@ -168,14 +153,12 @@ export default function PublicProfile() {
 
             <div className="relative -mt-16 px-5 pb-6 sm:-mt-20 sm:px-8">
               <div className="flex flex-col items-center text-center sm:flex-row sm:items-end sm:text-start">
-
-                {/* ✅ أضفنا onClick و cursor-pointer عشان نفتح الصورة */}
-                <div 
-                  className="relative shrink-0 cursor-pointer group"
+                <div
+                  className="group relative shrink-0 cursor-pointer"
                   onClick={() => avatarUrl && setIsImageOpen(true)}
                   title="تكبير الصورة"
                 >
-                  <div className="size-28 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] sm:size-32 transition group-hover:scale-105">
+                  <div className="size-28 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] transition group-hover:scale-105 sm:size-32">
                     <div className="size-full overflow-hidden rounded-full bg-[#0a0a0a]">
                       {avatarUrl ? (
                         <img
@@ -222,7 +205,6 @@ export default function PublicProfile() {
           </div>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-
             <div className={`${glass} flex items-center gap-4 p-5`}>
               <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02]">
                 <RouteIcon size={22} />
@@ -263,7 +245,7 @@ export default function PublicProfile() {
                     href={instagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition hover:border-[#E4405F]/30 hover:bg-[#E4405F]/5"
+                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition-colors hover:border-[#E4405F]/30 hover:bg-[#E4405F]/5"
                   >
                     <IconInstagram size={18} className="shrink-0 text-[#E4405F]" />
                     <div className="min-w-0 flex-1">
@@ -272,7 +254,7 @@ export default function PublicProfile() {
                       </p>
                       <p className="text-[10px] font-bold text-white/40">Instagram</p>
                     </div>
-                    <ArrowUpLeft size={13} className="shrink-0 text-white/30 transition group-hover:text-[#E4405F]" />
+                    <ArrowUpLeft size={13} className="shrink-0 text-white/30 transition-colors group-hover:text-[#E4405F]" />
                   </a>
                 )}
                 {facebookUrl && facebookHandle && (
@@ -280,7 +262,7 @@ export default function PublicProfile() {
                     href={facebookUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5"
+                    className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition-colors hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5"
                   >
                     <IconFacebook size={18} className="shrink-0 text-[#1877F2]" />
                     <div className="min-w-0 flex-1">
@@ -289,7 +271,7 @@ export default function PublicProfile() {
                       </p>
                       <p className="text-[10px] font-bold text-white/40">Facebook</p>
                     </div>
-                    <ArrowUpLeft size={13} className="shrink-0 text-white/30 transition group-hover:text-[#1877F2]" />
+                    <ArrowUpLeft size={13} className="shrink-0 text-white/30 transition-colors group-hover:text-[#1877F2]" />
                   </a>
                 )}
               </div>
@@ -303,30 +285,28 @@ export default function PublicProfile() {
             <Trophy size={16} className="text-[#F9EA02]" />
             عرض كل الراكبين
           </Link>
-
         </div>
 
-        {/* ✅ نافذة عرض الصورة المكبرة (Modal) */}
         {isImageOpen && avatarUrl && (
-          <div 
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          <div
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
             onClick={() => setIsImageOpen(false)}
           >
-            <div 
-              className="relative max-h-[90vh] max-w-4xl flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()} // منع إغلاق النافذة عند الضغط على الصورة نفسها
+            <div
+              className="relative flex max-h-[90vh] max-w-4xl items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                onClick={() => setIsImageOpen(false)} 
-                className="absolute -top-12 right-0 md:-right-12 md:top-0 text-white hover:text-[#F9EA02] bg-white/10 p-2 rounded-full backdrop-blur-md transition"
+              <button
+                onClick={() => setIsImageOpen(false)}
+                className="absolute -top-12 right-0 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:text-[#F9EA02] md:-right-12 md:top-0"
                 title="إغلاق"
               >
                 <X size={24} />
               </button>
-              <img 
-                src={avatarUrl} 
-                alt={fullName} 
-                className="max-h-[85vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10" 
+              <img
+                src={avatarUrl}
+                alt={fullName}
+                className="max-h-[85vh] w-auto max-w-full rounded-2xl border border-white/10 object-contain shadow-2xl"
               />
             </div>
           </div>

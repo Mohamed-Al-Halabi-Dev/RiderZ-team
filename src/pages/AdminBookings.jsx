@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Link } from "react-router-dom";
 import api, { API_URL } from "../config/api";
 import {
@@ -17,13 +17,95 @@ import {
 } from "lucide-react";
 
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
+
+// ✅ خلفية كرت الحجز (بدون blur عشان الأداء بالسكرول)
+const cardBg =
+  "rounded-3xl border border-white/10 bg-[#0d0d10]/80 shadow-lg shadow-black/40";
 
 const BOOKING_TYPES = {
   1: "اشتراك فقط",
   2: "+ خوذة",
   3: "+ خوذة ودراجة",
 };
+
+const BookingItem = memo(function BookingItem({
+  booking,
+  isProcessing,
+  onAction,
+  onViewImage,
+}) {
+  const getReceiptUrl = (url) =>
+    !url ? null : url.startsWith("/") ? `${API_URL}${url}` : url;
+
+  return (
+    <div className={`${cardBg} p-5 transition hover:border-white/20`}>
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02]">
+            <CalendarCheck size={22} />
+          </div>
+          <div>
+            <p className="text-lg font-black">
+              {booking.rideName || "اسم الرحلة غير متوفر"}
+            </p>
+            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-bold text-white/50">
+              <Link
+                to={`/leaderboard/${booking.username}`}
+                target="_blank"
+                className="flex items-center gap-1 transition hover:text-[#F9EA02] hover:underline"
+              >
+                <User size={12} />{" "}
+                {booking.fullName || `مستخدم #${booking.user_Id}`}
+              </Link>
+              <span className="flex items-center gap-1">
+                <Bike size={12} /> نوع الحجز:{" "}
+                {BOOKING_TYPES[booking.booking_Type] || booking.booking_Type}
+              </span>
+              <span className="flex items-center gap-1 text-[#F9EA02]">
+                <ShieldCheck size={12} /> {booking.total_Price} ل.س
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {booking.receipt_Image_URL ? (
+            <button
+              onClick={() => onViewImage(getReceiptUrl(booking.receipt_Image_URL))}
+              className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <FileImage size={16} /> عرض الإشعار
+            </button>
+          ) : (
+            <span className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-[10px] font-bold text-rose-400">
+              لا يوجد إشعار
+            </span>
+          )}
+          <button
+            onClick={() => onAction(booking.id, "approve")}
+            disabled={isProcessing}
+            className="flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-white transition hover:bg-emerald-600 disabled:opacity-50"
+          >
+            {isProcessing ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <CheckCircle2 size={14} />
+            )}{" "}
+            موافقة
+          </button>
+          <button
+            onClick={() => onAction(booking.id, "reject")}
+            disabled={isProcessing}
+            className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-black text-rose-400 transition hover:bg-rose-500/20 disabled:opacity-50"
+          >
+            <XCircle size={14} /> رفض
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
@@ -63,27 +145,8 @@ export default function AdminBookings() {
     }
   };
 
-  const getReceiptUrl = (url) =>
-    !url ? null : url.startsWith("/") ? `${API_URL}${url}` : url;
-
   return (
-    <main
-      dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-[#08080c] text-white"
-    >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-      </div>
-
+    <main dir="rtl" className="relative min-h-screen text-white">
       <div className="relative mx-auto max-w-5xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
         <Link
           to="/admin"
@@ -143,77 +206,13 @@ export default function AdminBookings() {
         {!loading && bookings.length > 0 && (
           <div className="space-y-4">
             {bookings.map((booking) => (
-              <div
+              <BookingItem
                 key={booking.id}
-                className={`${glass} p-5 transition hover:border-white/20`}
-              >
-                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02]">
-                      <CalendarCheck size={22} />
-                    </div>
-                    <div>
-                      <p className="text-lg font-black">
-                        {booking.rideName || "اسم الرحلة غير متوفر"}
-                      </p>
-                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-bold text-white/50">
-                        <Link
-                          to={`/leaderboard/${booking.username}`}
-                          target="_blank"
-                          className="flex items-center gap-1 transition hover:text-[#F9EA02] hover:underline"
-                        >
-                          <User size={12} />{" "}
-                          {booking.fullName || `مستخدم #${booking.user_Id}`}
-                        </Link>
-                        <span className="flex items-center gap-1">
-                          <Bike size={12} /> نوع الحجز:{" "}
-                          {BOOKING_TYPES[booking.booking_Type] ||
-                            booking.booking_Type}
-                        </span>
-                        <span className="flex items-center gap-1 text-[#F9EA02]">
-                          <ShieldCheck size={12} /> {booking.total_Price} ل.س
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 flex-wrap items-center gap-2">
-                    {booking.receipt_Image_URL ? (
-                      <button
-                        onClick={() =>
-                          setViewImage(getReceiptUrl(booking.receipt_Image_URL))
-                        }
-                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-white/70 transition hover:bg-white/10 hover:text-white"
-                      >
-                        <FileImage size={16} /> عرض الإشعار
-                      </button>
-                    ) : (
-                      <span className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-[10px] font-bold text-rose-400">
-                        لا يوجد إشعار
-                      </span>
-                    )}
-                    <button
-                      onClick={() => handleAction(booking.id, "approve")}
-                      disabled={processingId === booking.id}
-                      className="flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-white transition hover:bg-emerald-600 disabled:opacity-50"
-                    >
-                      {processingId === booking.id ? (
-                        <Loader2 size={14} className="animate-spin" />
-                      ) : (
-                        <CheckCircle2 size={14} />
-                      )}{" "}
-                      موافقة
-                    </button>
-                    <button
-                      onClick={() => handleAction(booking.id, "reject")}
-                      disabled={processingId === booking.id}
-                      className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-black text-rose-400 transition hover:bg-rose-500/20 disabled:opacity-50"
-                    >
-                      <XCircle size={14} /> رفض
-                    </button>
-                  </div>
-                </div>
-              </div>
+                booking={booking}
+                isProcessing={processingId === booking.id}
+                onAction={handleAction}
+                onViewImage={setViewImage}
+              />
             ))}
           </div>
         )}

@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../config/api";
 import {
   Mail, Phone, Bike as BikeIcon, Shield, LogOut,
   Route as RouteIcon, Edit3,
   LayoutDashboard, AlertTriangle, Calendar, ExternalLink, User, Plus, X,
 } from "lucide-react";
-import { API_URL } from "../config/api";
 import { getLevel } from "../constants/levels";
 import Seo from "../components/Seo";
 
@@ -21,11 +20,12 @@ const IconFacebook = ({ size = 16, ...props }) => (
   </svg>
 );
 
-const glass = "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+// ✅ خففنا الـ blur
+const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const fixUrl = (url) => {
   if (!url) return "";
-  if (url.startsWith("/")) return `${API_URL}${url}`;
+  if (url.startsWith("/")) return `${import.meta.env.VITE_API_URL || ""}${url}`;
   return url;
 };
 
@@ -58,12 +58,13 @@ function CardHeader({ title, icon: Icon, iconColor = "text-[#F9EA02]/70" }) {
   );
 }
 
+// ✅ أضفنا shrink-0 للـ label و min-w-0 للـ value عشان truncate يشتغل صح
 function Row({ icon: Icon, label, value, ltr }) {
   return (
     <div className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5">
       {Icon && <Icon size={15} className="shrink-0 text-white/40" />}
-      <span className="text-[11px] font-bold text-white/40">{label}</span>
-      <span dir={ltr ? "ltr" : undefined} className="ms-auto truncate text-[13px] font-bold text-white">
+      <span className="shrink-0 text-[11px] font-bold text-white/40">{label}</span>
+      <span dir={ltr ? "ltr" : undefined} className="ms-auto min-w-0 truncate text-[13px] font-bold text-white">
         {value || "—"}
       </span>
     </div>
@@ -76,25 +77,34 @@ export default function Profile() {
   const [bike, setBike] = useState(null);
   const [status, setStatus] = useState("loading");
   
-  // ✅ حالة (State) للتحكم بفتح وإغلاق نافذة الصورة
   const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
+    // ✅ فحص بسيط للتوكن (الـ api interceptor بيتكفل بالباقي)
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login", { state: { from: "/profile" } });
       return;
     }
+
     const ctrl = new AbortController();
     Promise.all([
-      axios.get(`${API_URL}/api/users/me`, { headers: { Authorization: `Bearer ${token}` }, signal: ctrl.signal }),
-      axios.get(`${API_URL}/api/bikes/me`, { headers: { Authorization: `Bearer ${token}` }, signal: ctrl.signal }).catch(() => null),
+      api.get("/api/users/me", { signal: ctrl.signal }),
+      api.get("/api/bikes/me", { signal: ctrl.signal }).catch(() => null),
     ])
-      .then(([u, b]) => { setUser(u.data.data); if (b?.data?.data) setBike(b.data.data); setStatus("ready"); })
+      .then(([u, b]) => {
+        setUser(u.data.data);
+        if (b?.data?.data) setBike(b.data.data);
+        setStatus("ready");
+      })
       .catch((err) => {
         if (err.name === "CanceledError") return;
-        if (err.response?.status === 401) { localStorage.removeItem("token"); navigate("/login"); }
-        else setStatus("error");
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+        } else {
+          setStatus("error");
+        }
       });
     return () => ctrl.abort();
   }, [navigate]);
@@ -106,14 +116,17 @@ export default function Profile() {
     navigate("/login", { replace: true });
   };
 
-  if (status === "loading") return (
-    <div className="grid h-screen place-items-center bg-[#08080c]">
-      <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
-    </div>
-  );
-  if (status === "error" || !user) return (
-    <div className="grid h-screen place-items-center bg-[#08080c] text-white">حدث خطأ.</div>
-  );
+  if (status === "loading")
+    return (
+      <div className="grid h-screen place-items-center bg-[#08080c]">
+        <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
+      </div>
+    );
+
+  if (status === "error" || !user)
+    return (
+      <div className="grid h-screen place-items-center bg-[#08080c] text-white">حدث خطأ.</div>
+    );
 
   const level = getLevel(user.level);
   const fullName = `${user.firstName} ${user.lastName}`.trim() || "بدون اسم";
@@ -125,7 +138,6 @@ export default function Profile() {
   const coverUrl = fixUrl(user.profile_Cover_URL);
   const avatarUrl = fixUrl(user.profile_Image_URL);
   const bikeImgUrl = fixUrl(bike?.imageUrl);
-  
   const hasBikeImage = user.hasBike && bikeImgUrl && !bikeImgUrl.includes("testimage");
 
   const instagramUrl = buildSocialUrl(user.instagram_URL, "https://instagram.com");
@@ -136,64 +148,50 @@ export default function Profile() {
 
   return (
     <>
-      <Seo 
-        title="الملف الشخصي" 
-        description="صفحة الملف الشخصي." 
-        noindex={true} 
-      />
-      <main dir="rtl" className="relative min-h-screen overflow-hidden bg-[#08080c] text-white">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-          <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-        </div>
+      <Seo title="الملف الشخصي" description="صفحة الملف الشخصي." noindex={true} />
+      <main dir="rtl" className="relative min-h-screen text-white">
+        {/* ✅ شلنا الخلفية المكررة، PageBackground بتظهر من App.jsx */}
 
         <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6 sm:pt-28">
           <div className="grid gap-4 lg:grid-cols-[360px_1fr] lg:gap-5">
-
             <aside className="lg:sticky lg:top-8 lg:self-start">
               <div className={`${glass} overflow-hidden`}>
                 <div className="relative h-32 w-full bg-gradient-to-br from-[#F9EA02]/30 via-purple-500/20 to-cyan-400/10 sm:h-36">
                   {coverUrl && (
-                    <img 
-                      src={coverUrl} 
-                      alt="Cover" 
+                    <img
+                      src={coverUrl}
+                      alt="Cover"
                       width={1200}
                       height={400}
                       decoding="async"
                       className="absolute inset-0 size-full object-cover"
-                      onError={(e) => { e.currentTarget.style.display = "none"; }} 
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 </div>
 
                 <div className="flex flex-col px-6 pb-6">
-                  {/* ✅ أضفنا onClick و cursor-pointer عشان نفتح الصورة */}
-                  <div 
-                    className="relative -mt-14 self-center cursor-pointer group"
+                  <div
+                    className="group relative -mt-14 cursor-pointer self-center"
                     onClick={() => avatarUrl && setIsImageOpen(true)}
                     title="تكبير الصورة"
                   >
-                    <div className="size-24 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] sm:size-28 transition group-hover:scale-105">
+                    <div className="size-24 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] transition group-hover:scale-105 sm:size-28">
                       <div className="size-full overflow-hidden rounded-full bg-[#0a0a0a]">
                         {avatarUrl ? (
-                          <img 
-                            src={avatarUrl} 
-                            alt={fullName} 
+                          <img
+                            src={avatarUrl}
+                            alt={fullName}
                             width={112}
                             height={112}
                             decoding="async"
                             className="size-full object-cover transition group-hover:opacity-80"
-                            onError={(e) => { e.currentTarget.style.display = "none"; }} 
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
                           />
                         ) : (
                           <div className="grid size-full place-items-center text-4xl font-black text-[#F9EA02]">
@@ -211,11 +209,15 @@ export default function Profile() {
 
                   <div className="mt-3 text-center">
                     <h1 className="text-xl font-black leading-tight">{fullName}</h1>
-                    <p dir="ltr" className="mt-1 font-mono text-[13px] font-bold text-[#F9EA02]">@{user.username}</p>
+                    <p dir="ltr" className="mt-1 font-mono text-[13px] font-bold text-[#F9EA02]">
+                      @{user.username}
+                    </p>
                   </div>
 
                   <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-                    <span className={`rounded-full ${level.bg} px-2.5 py-0.5 text-[10px] font-black uppercase text-white`}>{level.label}</span>
+                    <span className={`rounded-full ${level.bg} px-2.5 py-0.5 text-[10px] font-black uppercase text-white`}>
+                      {level.label}
+                    </span>
                     {isAdmin && (
                       <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[10px] font-bold text-white/70">
                         <Shield size={9} /> {user.role === "Admin" ? "أدمن" : "مشرف"}
@@ -223,13 +225,17 @@ export default function Profile() {
                     )}
                   </div>
 
-                  <div className="mt-5 grid grid-cols-3 divide-x divide-white/10 rtl:divide-x-reverse border-y border-white/10 py-3">
+                  <div className="mt-5 grid grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-3 rtl:divide-x-reverse">
                     <div className="flex flex-col items-center">
-                      <p dir="ltr" className="font-mono text-xl font-black leading-none">{user.number_Rounds || 0}</p>
+                      <p dir="ltr" className="font-mono text-xl font-black leading-none">
+                        {user.number_Rounds || 0}
+                      </p>
                       <p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-white/40">جولات</p>
                     </div>
                     <div className="flex flex-col items-center">
-                      <p dir="ltr" className="font-mono text-xl font-black leading-none">{(user.totalKilometers || 0).toFixed(0)}</p>
+                      <p dir="ltr" className="font-mono text-xl font-black leading-none">
+                        {(user.totalKilometers || 0).toFixed(0)}
+                      </p>
                       <p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-white/40">كم</p>
                     </div>
                     <div className="flex flex-col items-center">
@@ -244,11 +250,17 @@ export default function Profile() {
                         <Calendar size={12} /> عضو منذ {joinedDate}
                       </div>
                     )}
-                    <Link to="/profile/edit" className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#F9EA02] py-3 text-[12px] font-black text-black transition hover:bg-[#F9EA02]/90">
+                    <Link
+                      to="/profile/edit"
+                      className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#F9EA02] py-3 text-[12px] font-black text-black transition hover:bg-[#F9EA02]/90"
+                    >
                       <Edit3 size={14} /> تعديل الملف
                     </Link>
                     {isAdmin && (
-                      <Link to="/admin" className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#F9EA02]/30 bg-[#F9EA02]/10 py-2.5 text-[11px] font-black text-[#F9EA02] transition hover:bg-[#F9EA02]/20">
+                      <Link
+                        to="/admin"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#F9EA02]/30 bg-[#F9EA02]/10 py-2.5 text-[11px] font-black text-[#F9EA02] transition hover:bg-[#F9EA02]/20"
+                      >
                         <LayoutDashboard size={12} /> لوحة التحكم
                       </Link>
                     )}
@@ -258,7 +270,6 @@ export default function Profile() {
             </aside>
 
             <div className="space-y-4">
-
               <div className={`${glass} p-5`}>
                 <CardHeader title="التواصل" icon={Mail} />
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -277,16 +288,16 @@ export default function Profile() {
                         href={instagramUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition hover:border-[#E4405F]/30 hover:bg-[#E4405F]/5"
+                        className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition-colors hover:border-[#E4405F]/30 hover:bg-[#E4405F]/5"
                       >
                         <IconInstagram size={18} className="shrink-0 text-[#E4405F]" />
                         <div className="min-w-0 flex-1">
-                          <p dir="ltr" className="truncate text-[13px] font-bold text-white text-end sm:text-start">
+                          <p dir="ltr" className="truncate text-end text-[13px] font-bold text-white sm:text-start">
                             @{instagramHandle}
                           </p>
-                          <p className="text-[10px] font-bold text-white/40 text-end sm:text-start">Instagram</p>
+                          <p className="text-end text-[10px] font-bold text-white/40 sm:text-start">Instagram</p>
                         </div>
-                        <ExternalLink size={13} className="shrink-0 text-white/30 transition group-hover:text-[#E4405F]" />
+                        <ExternalLink size={13} className="shrink-0 text-white/30 transition-colors group-hover:text-[#E4405F]" />
                       </a>
                     )}
                     {facebookUrl && facebookHandle && (
@@ -294,16 +305,16 @@ export default function Profile() {
                         href={facebookUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5"
+                        className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5 transition-colors hover:border-[#1877F2]/30 hover:bg-[#1877F2]/5"
                       >
                         <IconFacebook size={18} className="shrink-0 text-[#1877F2]" />
                         <div className="min-w-0 flex-1">
-                          <p dir="ltr" className="truncate text-[13px] font-bold text-white text-end sm:text-start">
+                          <p dir="ltr" className="truncate text-end text-[13px] font-bold text-white sm:text-start">
                             @{facebookHandle}
                           </p>
-                          <p className="text-[10px] font-bold text-white/40 text-end sm:text-start">Facebook</p>
+                          <p className="text-end text-[10px] font-bold text-white/40 sm:text-start">Facebook</p>
                         </div>
-                        <ExternalLink size={13} className="shrink-0 text-white/30 transition group-hover:text-[#1877F2]" />
+                        <ExternalLink size={13} className="shrink-0 text-white/30 transition-colors group-hover:text-[#1877F2]" />
                       </a>
                     )}
                   </div>
@@ -325,16 +336,21 @@ export default function Profile() {
                 )}
               </div>
 
-              <div className="rounded-3xl border border-rose-500/25 bg-rose-500/[0.06] p-5 backdrop-blur-2xl shadow-xl shadow-black/40">
+              {/* ✅ خففنا الـ backdrop-blur من 2xl لـ md */}
+              <div className="rounded-3xl border border-rose-500/25 bg-rose-500/[0.06] p-5 backdrop-blur-md shadow-xl shadow-black/40">
                 <CardHeader title="الطوارئ" icon={AlertTriangle} iconColor="text-rose-400" />
                 <div className="grid gap-2 sm:grid-cols-2">
                   <div className="flex items-center gap-3 rounded-xl border border-rose-500/15 bg-white/[0.02] px-3.5 py-2.5">
-                    <span className="text-[11px] font-bold text-white/40">جهة الاتصال</span>
-                    <span className="ms-auto truncate text-[13px] font-bold text-white">{user.emergencyContactName || "—"}</span>
+                    <span className="shrink-0 text-[11px] font-bold text-white/40">جهة الاتصال</span>
+                    <span className="ms-auto min-w-0 truncate text-[13px] font-bold text-white">
+                      {user.emergencyContactName || "—"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 rounded-xl border border-rose-500/15 bg-white/[0.02] px-3.5 py-2.5">
-                    <span className="text-[11px] font-bold text-white/40">الرقم</span>
-                    <span dir="ltr" className="ms-auto truncate text-[13px] font-bold text-white">{user.emergencyContactPhone || "—"}</span>
+                    <span className="shrink-0 text-[11px] font-bold text-white/40">الرقم</span>
+                    <span dir="ltr" className="ms-auto min-w-0 truncate text-[13px] font-bold text-white">
+                      {user.emergencyContactPhone || "—"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -349,21 +365,25 @@ export default function Profile() {
                         <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">النوع</p>
                         <p className="text-[14px] font-black">{bike?.bikeType || "غير محدد"}</p>
                       </div>
-                      <span className="ms-auto rounded-full bg-[#F9EA02]/10 px-2.5 py-1 text-[10px] font-black text-[#F9EA02]">خاصة</span>
+                      <span className="ms-auto rounded-full bg-[#F9EA02]/10 px-2.5 py-1 text-[10px] font-black text-[#F9EA02]">
+                        خاصة
+                      </span>
                     </div>
-                    
+
                     {hasBikeImage && (
                       <div className="overflow-hidden rounded-xl border border-white/10 sm:w-48">
-                        <img 
-                          src={bikeImgUrl} 
-                          alt="Bike" 
+                        <img
+                          src={bikeImgUrl}
+                          alt="Bike"
                           width={400}
                           height={225}
                           loading="lazy"
                           decoding="async"
-                          className="h-full w-full object-cover" 
+                          className="h-full w-full object-cover"
                           style={{ aspectRatio: "16/9" }}
-                          onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }} 
+                          onError={(e) => {
+                            e.currentTarget.parentElement.style.display = "none";
+                          }}
                         />
                       </div>
                     )}
@@ -380,37 +400,40 @@ export default function Profile() {
               )}
 
               <div className={`${glass} flex items-center justify-between px-5 py-3`}>
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">RiderZ · {user.role}</span>
-                <button onClick={handleLogout} className="flex items-center gap-1.5 text-[12px] font-bold text-white/50 transition hover:text-rose-400">
+                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+                  RiderZ · {user.role}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 text-[12px] font-bold text-white/50 transition-colors hover:text-rose-400"
+                >
                   <LogOut size={13} /> تسجيل الخروج
                 </button>
               </div>
-
             </div>
           </div>
         </div>
 
-        {/* ✅ نافذة عرض الصورة المكبرة (Modal) */}
         {isImageOpen && avatarUrl && (
-          <div 
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          <div
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
             onClick={() => setIsImageOpen(false)}
           >
-            <div 
-              className="relative max-h-[90vh] max-w-4xl flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()} // منع إغلاق النافذة عند الضغط على الصورة نفسها
+            <div
+              className="relative flex max-h-[90vh] max-w-4xl items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                onClick={() => setIsImageOpen(false)} 
-                className="absolute -top-12 right-0 md:-right-12 md:top-0 text-white hover:text-[#F9EA02] bg-white/10 p-2 rounded-full backdrop-blur-md transition"
+              <button
+                onClick={() => setIsImageOpen(false)}
+                className="absolute -top-12 right-0 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:text-[#F9EA02] md:-right-12 md:top-0"
                 title="إغلاق"
               >
                 <X size={24} />
               </button>
-              <img 
-                src={avatarUrl} 
-                alt={fullName} 
-                className="max-h-[85vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border border-white/10" 
+              <img
+                src={avatarUrl}
+                alt={fullName}
+                className="max-h-[85vh] w-auto max-w-full rounded-2xl border border-white/10 object-contain shadow-2xl"
               />
             </div>
           </div>

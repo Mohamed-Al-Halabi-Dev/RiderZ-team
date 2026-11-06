@@ -13,11 +13,12 @@ import {
   KeyRound,
 } from "lucide-react";
 
+// ✅ خففنا الـ blur
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const inputClass =
-  "w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pe-11 ps-11 text-[14px] font-semibold text-white placeholder:text-white/25 outline-none transition focus:border-[#F9EA02]/50 focus:ring-2 focus:ring-[#F9EA02]/20";
+  "w-full rounded-xl border border-white/10 bg-white/[0.03] py-3 pe-11 ps-11 text-[14px] font-semibold text-white placeholder:text-white/25 outline-none transition-colors focus:border-[#F9EA02]/50 focus:ring-2 focus:ring-[#F9EA02]/20";
 
 const iconClass =
   "absolute inset-y-0 start-4 flex items-center text-white/40 pointer-events-none";
@@ -87,26 +88,14 @@ export default function ResetPassword() {
   return (
     <main
       dir="rtl"
-      className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[#08080c] p-4 py-12 text-white"
+      className="relative flex min-h-screen items-center justify-center overflow-y-auto p-4 py-12 text-white"
     >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-        <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
+      {/* ✅ شلنا الخلفية المكررة، PageBackground بتظهر من App.jsx */}
 
       <div className={`relative my-8 w-full max-w-md p-6 sm:p-8 ${glass}`}>
         <Link
           to="/login"
-          className="mb-6 inline-flex items-center gap-1.5 text-[12px] font-bold text-white/50 transition hover:text-white"
+          className="mb-6 inline-flex items-center gap-1.5 text-[12px] font-bold text-white/50 transition-colors hover:text-white"
         >
           <ArrowRight size={14} /> رجوع لتسجيل الدخول
         </Link>
@@ -139,7 +128,7 @@ export default function ResetPassword() {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div className="relative">
               <div className={iconClass}>
                 <Lock size={16} />
@@ -158,7 +147,7 @@ export default function ResetPassword() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 end-3 flex items-center text-white/40 transition hover:text-[#F9EA02]"
+                className="absolute inset-y-0 end-3 flex items-center text-white/40 transition-colors hover:text-[#F9EA02]"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -183,7 +172,7 @@ export default function ResetPassword() {
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute inset-y-0 end-3 flex items-center text-white/40 transition hover:text-[#F9EA02]"
+                className="absolute inset-y-0 end-3 flex items-center text-white/40 transition-colors hover:text-[#F9EA02]"
                 tabIndex={-1}
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}

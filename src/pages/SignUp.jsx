@@ -20,11 +20,13 @@ import {
 } from "lucide-react";
 import Seo from "../components/Seo";
 
+// ✅ خففنا الـ blur
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
+// ✅ غيرنا transition لـ transition-colors
 const fieldWrapper =
-  "flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-3 transition focus-within:border-[#F9EA02]/50 focus-within:ring-2 focus-within:ring-[#F9EA02]/20";
+  "flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-3 transition-colors focus-within:border-[#F9EA02]/50 focus-within:ring-2 focus-within:ring-[#F9EA02]/20";
 
 const fieldInput =
   "min-w-0 flex-1 bg-transparent text-[14px] font-semibold text-white placeholder:text-white/25 outline-none";
@@ -65,7 +67,6 @@ export default function Signup() {
     setError("");
     setLoading(true);
 
-    // التحقق اليدوي من الحقول
     if (!form.firstName.trim()) {
       setError("الرجاء إدخال الاسم الأول");
       setLoading(false);
@@ -82,7 +83,6 @@ export default function Signup() {
       return;
     }
 
-    // التحقق من صيغة البريد الإلكتروني
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!form.email.trim() || !emailRegex.test(form.email.trim())) {
       setError("الرجاء إدخال بريد إلكتروني صحيح");
@@ -90,7 +90,6 @@ export default function Signup() {
       return;
     }
 
-    // التحقق من رقم الهاتف الأساسي
     const phoneRegex = /^09\d{8}$/;
     if (!form.phone.trim() || !phoneRegex.test(form.phone.trim())) {
       setError("رقم الهاتف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام (مثال: 0912345678)");
@@ -98,14 +97,12 @@ export default function Signup() {
       return;
     }
 
-    // التحقق من كلمة المرور
     if (form.password.length < 6) {
       setError("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
       setLoading(false);
       return;
     }
 
-    // التحقق من رقم هاتف الطوارئ (إذا تم إدخاله)
     if (form.emergencyContactPhone.trim() && !phoneRegex.test(form.emergencyContactPhone.trim())) {
       setError("رقم هاتف الطوارئ يجب أن يبدأ بـ 09 ويتكون من 10 أرقام");
       setLoading(false);
@@ -113,7 +110,6 @@ export default function Signup() {
     }
 
     try {
-      // ─── 1. إنشاء الحساب ───
       const payload = {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
@@ -132,7 +128,6 @@ export default function Signup() {
         throw new Error(registerRes.data?.message || "فشل إنشاء الحساب");
       }
 
-      // ─── 2. تسجيل الدخول تلقائياً ───
       const loginBody = {
         username: form.username.trim(),
         email: "",
@@ -140,12 +135,10 @@ export default function Signup() {
       };
 
       const loginRes = await api.post("/api/auth/login", loginBody);
-      
-      // ✅ بناءً على شكل الـ JSON: البيانات موجودة في loginRes.data.data.token
+
       const data = loginRes.data?.data?.token;
 
       if (!data?.token) {
-        // الحساب انشأ، بس الدخول التلقائي فشل → نوديه Login مع رسالة
         setSuccess(true);
         setTimeout(() => {
           navigate("/login", { state: { registered: true } });
@@ -153,12 +146,11 @@ export default function Signup() {
         return;
       }
 
-      // ─── 3. دخول مباشر عالموقع ───
       login({
         id: data.id,
         role: data.role,
         token: data.token,
-        refreshToken: data.refreshToken, // ✅ تمرير الـ Refresh Token
+        refreshToken: data.refreshToken,
       });
 
       setSuccess(true);
@@ -188,26 +180,14 @@ export default function Signup() {
       />
       <main
         dir="rtl"
-        className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[#08080c] p-4 py-12 text-white"
+        className="relative flex min-h-screen items-center justify-center overflow-y-auto p-4 py-12 text-white"
       >
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-          <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-          <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-        </div>
+        {/* ✅ شلنا الخلفية المكررة */}
 
         <div className={`relative my-8 w-full max-w-xl p-6 sm:p-8 ${glass}`}>
           <Link
             to="/"
-            className="mb-6 inline-flex items-center gap-1.5 text-[12px] font-bold text-white/50 transition hover:text-white"
+            className="mb-6 inline-flex items-center gap-1.5 text-[12px] font-bold text-white/50 transition-colors hover:text-white"
           >
             <ArrowRight size={14} /> رجوع للرئيسية
           </Link>
@@ -321,7 +301,7 @@ export default function Signup() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="shrink-0 text-white/40 transition hover:text-[#F9EA02]"
+                className="shrink-0 text-white/40 transition-colors hover:text-[#F9EA02]"
                 aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}

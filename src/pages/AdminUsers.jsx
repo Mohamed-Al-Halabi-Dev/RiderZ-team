@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 import { Link } from "react-router-dom";
 import api from "../config/api";
 import {
@@ -39,7 +39,7 @@ const IconFacebook = ({ size = 16, ...props }) => (
   </svg>
 );
 
-const glass = "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 const PAGE_SIZE = 8;
 const ALL_LEVELS = [
   "Beginner_A", "Beginner_B", "Beginner_C",
@@ -147,14 +147,7 @@ export default function AdminUsers() {
   }, { Admin: 0, Supervisor: 0, Member: 0 }), [users]);
 
   return (
-    <main dir="rtl" className="relative min-h-screen overflow-x-hidden bg-[#08080c] text-white">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-        <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-      </div>
-
+    <main dir="rtl" className="relative min-h-screen overflow-x-hidden text-white">
       <div className="relative mx-auto w-full max-w-7xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
         <Link to="/admin" className="mb-6 inline-flex items-center gap-1.5 text-sm font-bold text-white/50 transition hover:text-[#F9EA02]">
           <ArrowRight size={14} /> رجوع للوحة التحكم
@@ -238,7 +231,7 @@ export default function AdminUsers() {
   );
 }
 
-function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
+const UserCard = memo(function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
   const initials = (user.firstName?.[0] ?? user.username?.[0] ?? "?").toUpperCase();
   const avatar = user.profile_Image_URL;
   const role = ROLE_CONFIG[user.role] ?? ROLE_CONFIG.Member;
@@ -254,7 +247,7 @@ function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
             <div className="relative shrink-0">
               <div className={`size-14 sm:size-16 overflow-hidden rounded-2xl bg-white/5 ring-2 ${role.ring}`}>
                 {avatar ? (
-                  <img src={avatar} alt={user.username} className="size-full object-cover" />
+                  <img src={avatar} alt={user.username} loading="lazy" decoding="async" className="size-full object-cover" />
                 ) : (
                   <div className="grid size-full place-items-center text-lg font-black text-white/50">{initials}</div>
                 )}
@@ -345,7 +338,7 @@ function UserCard({ user, isMenuOpen, onToggleMenu, onAction }) {
       </div>
     </div>
   );
-}
+});
 
 function DropdownMenu({ user, onAction }) {
   const MenuItem = ({ icon: Icon, label, onClick, color = "default" }) => {
@@ -364,7 +357,7 @@ function DropdownMenu({ user, onAction }) {
     );
   };
   return (
-    <div className="absolute left-0 top-full z-[100] mt-2 min-w-[200px] overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d10] shadow-2xl shadow-black/60 backdrop-blur-2xl sm:left-auto sm:right-0" onClick={(e) => e.stopPropagation()}>
+    <div className="absolute left-0 top-full z-[100] mt-2 min-w-[200px] overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d10] shadow-2xl shadow-black/60 backdrop-blur-md sm:left-auto sm:right-0" onClick={(e) => e.stopPropagation()}>
       <MenuItem icon={user.isActive ? UserX : UserCheck} label={user.isActive ? "تعطيل الحساب" : "تفعيل الحساب"} color={user.isActive ? "rose" : "emerald"} onClick={() => onAction("toggle")} />
       <MenuItem icon={Star} label="تعديل المستوى" color="yellow" onClick={() => onAction("level")} />
       <div className="my-1 h-px bg-white/5" />
@@ -400,7 +393,7 @@ function ActionModal({ dialog, onClose, onConfirm, onChangeLevel, onChangeRole, 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#0d0d10] shadow-2xl shadow-black/60" onClick={(e) => e.stopPropagation()}>
         <div className="relative p-6 pb-0">
           <button onClick={onClose} disabled={submitting} className="absolute end-4 top-4 grid size-8 place-items-center rounded-lg text-white/40 transition hover:bg-white/5 hover:text-white disabled:opacity-30">
@@ -478,7 +471,6 @@ function Section({ title, children, warning }) {
   );
 }
 
-// ✅ تعديل جذري لمكون InfoRow عشان يمنع النصوص الطويلة (زي الروابط) من تمديد الشاشة
 function InfoRow({ icon: Icon, label, value, ltr, link }) {
   return (
     <div className="flex w-full min-w-0 items-center justify-between gap-2 text-[11px]">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Link } from "react-router-dom";
 import api from "../config/api";
 import {
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 const glass =
-  "rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl shadow-xl shadow-black/40";
+  "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const STAT_CARDS = [
   {
@@ -66,24 +66,7 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <main
-      dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-[#08080c] text-white"
-    >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute -top-40 -start-40 size-[500px] rounded-full bg-[#F9EA02]/15 blur-[120px]" />
-        <div className="absolute -bottom-40 -end-40 size-[500px] rounded-full bg-purple-500/15 blur-[120px]" />
-        <div className="absolute left-1/2 top-1/3 size-[400px] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-[120px]" />
-      </div>
-
+    <main dir="rtl" className="relative min-h-screen text-white">
       <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
         <Link
           to="/"
@@ -169,7 +152,7 @@ export default function AdminDashboard() {
   );
 }
 
-function StatCard({ icon: Icon, label, value, loading, accent, link }) {
+const StatCard = memo(function StatCard({ icon: Icon, label, value, loading, accent, link }) {
   const accents = {
     yellow: {
       bg: "bg-[#F9EA02]/10",
@@ -194,7 +177,8 @@ function StatCard({ icon: Icon, label, value, loading, accent, link }) {
   return (
     <Link
       to={link}
-      className={`${glass} group relative overflow-hidden p-6 transition hover:scale-[1.02] ${a.border} ${a.glow}`}
+      // ✅ غيرنا scale لـ translate عشان ما يعمل repaint للـ backdrop-blur
+      className={`${glass} group relative overflow-hidden p-6 transition-all hover:-translate-y-1 ${a.border} ${a.glow}`}
     >
       <div className="flex items-start justify-between">
         <div
@@ -224,13 +208,13 @@ function StatCard({ icon: Icon, label, value, loading, accent, link }) {
       </div>
     </Link>
   );
-}
+});
 
-function QuickAction({ to, icon: Icon, title, desc }) {
+const QuickAction = memo(function QuickAction({ to, icon: Icon, title, desc }) {
   return (
     <Link
       to={to}
-      className={`${glass} group flex items-center gap-4 p-4 transition hover:border-[#F9EA02]/30 hover:bg-white/[0.06]`}
+      className={`${glass} group flex items-center gap-4 p-4 transition hover:border-[#F9EA02]/30 hover:bg-white/[0.08]`}
     >
       <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-white/5 text-white/70 transition group-hover:bg-[#F9EA02]/15 group-hover:text-[#F9EA02]">
         <Icon size={18} />
@@ -247,4 +231,4 @@ function QuickAction({ to, icon: Icon, title, desc }) {
       />
     </Link>
   );
-}
+});
