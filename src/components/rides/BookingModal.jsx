@@ -97,6 +97,12 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
   const [showTerms, setShowTerms] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+  // ✅ 1. ضعنا النص هنا عشان يكون سهل التعديل
+  const SHAM_CASH_DATA = "883d053990801470e29e47f226f03b32";
+  
+  // ✅ 2. ولدنا رابط الباركود ديناميكياً
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(SHAM_CASH_DATA)}`;
+
   const calculatePrice = (type) => {
     if (type === 1) return ride.basePrice;
     if (type === 2) return ride.basePrice + (ride.helmetPrice || 0);
@@ -245,9 +251,10 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
                   </p>
                 </div>
                 <div className="shrink-0 rounded-xl bg-white p-2">
+                  {/* ✅ 3. استخدمنا رابط الباركود الديناميكي هنا */}
                   <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ShamCash-Payment"
-                    alt="QR"
+                    src={qrCodeUrl}
+                    alt="Sham Cash QR"
                     width={80}
                     height={80}
                     loading="lazy"

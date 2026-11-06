@@ -25,18 +25,17 @@ export function AuthProvider({ children }) {
     };
   });
 
-  const login = ({ id, role, token }) => {
+  const login = ({ id, role, token, refreshToken }) => {
     let finalId = id;
     let finalRole = role;
 
-    // إذا الـ id/role مش مرسلين، نفكهم من الـ token
     if ((!finalId || !finalRole) && token) {
       const decoded = getUserFromToken(token);
       finalId = finalId || decoded.id;
       finalRole = finalRole || decoded.role;
     }
 
-    saveAuth({ id: finalId, role: finalRole, token });
+    saveAuth({ id: finalId, role: finalRole, token, refreshToken }); // ✅ ضفنا refreshToken
     setUser({ id: finalId, role: finalRole, token, isLoggedIn: true });
   };
 

@@ -65,7 +65,7 @@ export default function Signup() {
     setError("");
     setLoading(true);
 
-    // ✅ التحقق اليدوي من الحقول (بدل رسائل المتصفح البشعة)
+    // التحقق اليدوي من الحقول
     if (!form.firstName.trim()) {
       setError("الرجاء إدخال الاسم الأول");
       setLoading(false);
@@ -81,7 +81,7 @@ export default function Signup() {
       setLoading(false);
       return;
     }
-    
+
     // التحقق من صيغة البريد الإلكتروني
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!form.email.trim() || !emailRegex.test(form.email.trim())) {
@@ -140,6 +140,8 @@ export default function Signup() {
       };
 
       const loginRes = await api.post("/api/auth/login", loginBody);
+      
+      // ✅ بناءً على شكل الـ JSON: البيانات موجودة في loginRes.data.data.token
       const data = loginRes.data?.data?.token;
 
       if (!data?.token) {
@@ -156,6 +158,7 @@ export default function Signup() {
         id: data.id,
         role: data.role,
         token: data.token,
+        refreshToken: data.refreshToken, // ✅ تمرير الـ Refresh Token
       });
 
       setSuccess(true);
@@ -231,7 +234,6 @@ export default function Signup() {
             </div>
           )}
 
-          {/* ✅ أضفنا noValidate عشان نلغي رسائل المتصفح الافتراضية */}
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className={fieldWrapper}>
