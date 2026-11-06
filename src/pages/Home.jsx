@@ -154,21 +154,21 @@ export default function Home() {
                 </div>
               </div>
 
-          <div className="order-2 relative">
-  {/* التوهج اللي ورا الصورة */}
-  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,rgba(249,234,2,0.3),transparent_70%)]" />
-  
-  {/* ✅ رجعنا الـ mask للشكل الحلو، وشلنا الـ drop-shadow الثقيل */}
-  <img
-    src={heroTeam}
-    alt="فريق RiderZ"
-    width={934}
-    height={810}
-    fetchPriority="high"
-    decoding="async"
-    className="relative block h-auto w-full select-none object-contain [mask-image:linear-gradient(to_bottom,#000_85%,transparent_100%)]"
-  />
-</div>
+              <div className="order-2 relative">
+                {/* التوهج اللي ورا الصورة */}
+                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,rgba(249,234,2,0.3),transparent_70%)]" />
+
+                {/* ✅ رجعنا الـ mask للشكل الحلو، وشلنا الـ drop-shadow الثقيل */}
+                <img
+                  src={heroTeam}
+                  alt="فريق RiderZ"
+                  width={934}
+                  height={810}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="relative block h-auto w-full select-none object-contain [mask-image:linear-gradient(to_bottom,#000_85%,transparent_100%)]"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -201,17 +201,20 @@ export default function Home() {
               </Link>
             </div>
 
-            {loading ? (
-              <div className="flex justify-center py-10">
-                <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
-              </div>
-            ) : topUsers.length > 0 ? (
-              <Podium topUsers={topUsers} />
-            ) : (
-              <div className={`${glass} p-8 text-center text-white/50`}>
-                لا توجد بيانات متاحة حالياً.
-              </div>
-            )}
+            {/* ✅ حجزنا مساحة 380px/480px عشان نمنع اهتزاز الصفحة (CLS) */}
+            <div className="min-h-[380px] sm:min-h-[480px] flex flex-col justify-center">
+              {loading ? (
+                <div className="flex justify-center py-10">
+                  <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
+                </div>
+              ) : topUsers.length > 0 ? (
+                <Podium topUsers={topUsers} />
+              ) : (
+                <div className={`${glass} p-8 text-center text-white/50`}>
+                  لا توجد بيانات متاحة حالياً.
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
@@ -243,21 +246,24 @@ export default function Home() {
               </Link>
             </div>
 
-            {loading ? (
-              <div className="flex justify-center py-10">
-                <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
-              </div>
-            ) : latestRides.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {latestRides.map((ride) => (
-                  <RidePreviewCard key={ride.id} ride={ride} />
-                ))}
-              </div>
-            ) : (
-              <div className={`${glass} p-8 text-center text-white/50`}>
-                لا توجد جولات قادمة حالياً.
-              </div>
-            )}
+            {/* ✅ حجزنا مساحة 350px/400px عشان نمنع اهتزاز الصفحة (CLS) */}
+            <div className="min-h-[350px] sm:min-h-[400px]">
+              {loading ? (
+                <div className="flex justify-center py-10">
+                  <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
+                </div>
+              ) : latestRides.length > 0 ? (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {latestRides.map((ride) => (
+                    <RidePreviewCard key={ride.id} ride={ride} />
+                  ))}
+                </div>
+              ) : (
+                <div className={`${glass} p-8 text-center text-white/50`}>
+                  لا توجد جولات قادمة حالياً.
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
@@ -427,7 +433,6 @@ export default function Home() {
             <div className={`${glass} relative overflow-hidden p-8 sm:p-14`}>
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#F9EA02]/10 via-transparent to-purple-500/10" />
 
-              {/* ✅ استبدلنا blur-[100px] بـ radial-gradient خفيف */}
               <div className="pointer-events-none absolute -end-20 -top-20 size-[300px] rounded-full bg-[radial-gradient(circle,rgba(249,234,2,0.2),transparent_70%)]" />
 
               <div className="relative z-10 flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-start">
@@ -673,7 +678,6 @@ const RidePreviewCard = memo(function RidePreviewCard({ ride }) {
 const FeatureCard = memo(function FeatureCard({ icon: Icon, title, desc }) {
   return (
     <div
-      // ✅ غيرنا transition لـ transition-colors عشان ما يعمل repaint للـ backdrop
       className={`${glass} group relative overflow-hidden p-6 transition-colors hover:border-[#F9EA02]/30 hover:bg-white/[0.08]`}
     >
       <div className="mb-4 inline-flex size-12 items-center justify-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02] transition-transform group-hover:scale-110">
