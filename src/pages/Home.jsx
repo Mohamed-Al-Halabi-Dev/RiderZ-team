@@ -154,19 +154,21 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="order-2 relative">
-                {/* ✅ شلنا animate-pulse من هون لتخفيف إعادة الرسم */}
-                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,rgba(249,234,2,0.3),transparent_70%)]" />
-                <img
-                  src={heroTeam}
-                  alt="فريق RiderZ"
-                  width={934}
-                  height={810}
-                  fetchPriority="high"
-                  decoding="async"
-                  className="relative block h-auto w-full select-none object-contain drop-shadow-2xl [mask-image:linear-gradient(to_bottom,#000_85%,transparent_100%)]"
-                />
-              </div>
+          <div className="order-2 relative">
+  {/* التوهج اللي ورا الصورة */}
+  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,rgba(249,234,2,0.3),transparent_70%)]" />
+  
+  {/* ✅ رجعنا الـ mask للشكل الحلو، وشلنا الـ drop-shadow الثقيل */}
+  <img
+    src={heroTeam}
+    alt="فريق RiderZ"
+    width={934}
+    height={810}
+    fetchPriority="high"
+    decoding="async"
+    className="relative block h-auto w-full select-none object-contain [mask-image:linear-gradient(to_bottom,#000_85%,transparent_100%)]"
+  />
+</div>
             </div>
           </div>
         </section>
