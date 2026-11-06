@@ -8,9 +8,11 @@ import {
   getRole,
 } from "../lib/auth";
 
+// ✅ رابط واحد فقط يتمركز بملف .env، وإذا مش موجود بيرجع للسيرفر
+export const API_URL = import.meta.env.VITE_API_URL || "https://mohameddev12-001-site1.ftempurl.com";
 
-
-const api = axios.create({ baseURL: BACKEND_URL });
+// ✅ نستخدم API_URL هون
+const api = axios.create({ baseURL: API_URL });
 
 api.interceptors.request.use(
   (config) => {
@@ -73,8 +75,9 @@ api.interceptors.response.use(
       }
 
       try {
+        // ✅ نستخدم API_URL هون كمان بدل BACKEND_URL
         const response = await axios.post(
-          `${BACKEND_URL}/api/auth/refresh-token`,
+          `${API_URL}/api/auth/refresh-token`,
           { refreshToken }
         );
 
@@ -110,5 +113,5 @@ api.interceptors.response.use(
 
 export default api;
 
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export const PAGE_SIZE = 12;
