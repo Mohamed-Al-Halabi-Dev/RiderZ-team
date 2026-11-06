@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, LogOut, User, Ticket, ChevronDown } from "lucide-react";
-import logo from "../assets/Logo/RiderZLogo.jpg";
-import RiderZWord from "../assets/Logo/RiderZWord.PNG";
+import logo from "/RiderZLogo.webp";
+import RiderZWord from "/RiderZWord.webp";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {

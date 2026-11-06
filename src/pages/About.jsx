@@ -10,7 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 
-import heroTeam from "../assets/Hero-team-cropped.webp";
+import heroTeam from "/Hero-team-cropped.webp";
 
 // ✅ خففنا الـ blur
 const glass =

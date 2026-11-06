@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Link } from "react-router-dom";
 import { MapPin, Mail, ArrowUpRight } from "lucide-react";
 
-import riderzLogo from "../assets/Logo/RiderZWord.PNG";
+import riderzLogo from "/RiderZWord.webp";
 
 const IconInstagram = ({ size = 16, ...props }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" {...props}>

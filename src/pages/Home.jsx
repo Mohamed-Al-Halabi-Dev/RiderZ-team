@@ -13,7 +13,7 @@ import {
   Medal,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import heroTeam from "../assets/Hero-team-cropped.webp";
+import heroTeam from "/Hero-team-cropped.webp";
 import Seo from "../components/Seo";
 
 const glass =

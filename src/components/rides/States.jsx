@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════
-   ErrorState — لما يفشل جلب البيانات
-   ═══════════════════════════════════════════════ */
+
 
 export function ErrorState({ onRetry }) {
   return (
@@ -18,9 +16,7 @@ export function ErrorState({ onRetry }) {
   );
 }
 
-/* ═══════════════════════════════════════════════
-   EmptyState — لما ما في نتائج
-   ═══════════════════════════════════════════════ */
+
 
 export function EmptyState({ search, onClear }) {
   return (
