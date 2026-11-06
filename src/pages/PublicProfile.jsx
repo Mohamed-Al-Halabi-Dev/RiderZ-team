@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import Seo from "../components/Seo";
 
-// ✅ خففنا الـ blur
 const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const fixUrl = (url) => {
@@ -53,20 +52,36 @@ export default function PublicProfile() {
   const { username } = useParams();
 
   const [user, setUser] = useState(null);
+  const [bikeImage, setBikeImage] = useState(null); // ✅ حالة لحفظ صورة الدراجة
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [isImageOpen, setIsImageOpen] = useState(false);
+  
+  const [imageModalUrl, setImageModalUrl] = useState(null);
 
   useEffect(() => {
     const ctrl = new AbortController();
 
-    // ✅ استخدمنا api بدل axios
     api
       .get(`/api/users/${username}/profile`, { signal: ctrl.signal })
-      .then((res) => {
+      .then(async (res) => {
         const data = res.data?.data ?? res.data;
         if (!data) return setError(true);
         setUser(data);
+
+        // ✅ إذا المستخدم عنده دراجة، بنجيب صورة الدراجة من الـ Endpoint
+        if (data.hasBike && data.id) {
+          try {
+            const bikeRes = await api.get(`/api/bikes/${data.id}`, { signal: ctrl.signal });
+            const bikeData = bikeRes.data?.data;
+            if (bikeData?.imageUrl) {
+              setBikeImage(fixUrl(bikeData.imageUrl));
+            }
+          } catch (bikeErr) {
+            // إذا ما في دراجة أو صار خطأ، بنتجاهل وبنعرض الأيقونة العادية
+            console.log("No bike image found");
+          }
+        }
+        
         setLoading(false);
       })
       .catch((err) => {
@@ -123,8 +138,6 @@ export default function PublicProfile() {
         noindex={true}
       />
       <main dir="rtl" className="relative min-h-screen text-white">
-        {/* ✅ شلنا الخلفية المكررة */}
-
         <div className="relative mx-auto max-w-4xl px-4 pb-20 pt-24 sm:px-6 sm:pt-28">
           <Link
             to="/leaderboard"
@@ -134,7 +147,8 @@ export default function PublicProfile() {
           </Link>
 
           <div className={`${glass} overflow-hidden`}>
-            <div className="relative h-36 w-full bg-gradient-to-br from-[#F9EA02]/20 via-purple-500/20 to-cyan-400/10 sm:h-48">
+            {/* ✅ الغلاف - قابل للضغط */}
+            <div className="group relative h-36 w-full bg-gradient-to-br from-[#F9EA02]/20 via-purple-500/20 to-cyan-400/10 sm:h-48">
               {coverUrl && (
                 <img
                   src={coverUrl}
@@ -142,20 +156,22 @@ export default function PublicProfile() {
                   width={1200}
                   height={400}
                   decoding="async"
-                  className="absolute inset-0 size-full object-cover"
+                  className="absolute inset-0 size-full cursor-pointer object-cover transition group-hover:opacity-90"
+                  onClick={() => setImageModalUrl(coverUrl)}
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                   }}
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/20 to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/20 to-transparent" />
             </div>
 
             <div className="relative -mt-16 px-5 pb-6 sm:-mt-20 sm:px-8">
               <div className="flex flex-col items-center text-center sm:flex-row sm:items-end sm:text-start">
+                {/* ✅ الصورة الشخصية - قابلة للضغط */}
                 <div
                   className="group relative shrink-0 cursor-pointer"
-                  onClick={() => avatarUrl && setIsImageOpen(true)}
+                  onClick={() => avatarUrl && setImageModalUrl(avatarUrl)}
                   title="تكبير الصورة"
                 >
                   <div className="size-28 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] transition group-hover:scale-105 sm:size-32">
@@ -219,16 +235,30 @@ export default function PublicProfile() {
               </div>
             </div>
 
+            {/* ✅ كارت الدراجة - بيظهر الصورة إذا موجودة، أو الأيقونة إذا ما في صورة */}
             <div className={`${glass} flex items-center gap-4 p-5`}>
-              <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02]">
-                <BikeIcon size={22} />
-              </div>
+              {bikeImage ? (
+                <div
+                  className="group relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-white/10"
+                  onClick={() => setImageModalUrl(bikeImage)}
+                >
+                  <img
+                    src={bikeImage}
+                    alt="Bike"
+                    className="size-full object-cover transition duration-500 group-hover:scale-110"
+                  />
+                </div>
+              ) : (
+                <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#F9EA02]/10 text-[#F9EA02]">
+                  <BikeIcon size={22} />
+                </div>
+              )}
               <div>
                 <p className="text-sm font-black text-white sm:text-base">
                   {user.hasBike ? "يمتلك دراجة" : "بدون دراجة"}
                 </p>
                 <p className="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-white/40">
-                  الدراجة
+                  {user.hasBike && bikeImage ? "اضغط لرؤية الدراجة" : "الدراجة"}
                 </p>
               </div>
             </div>
@@ -287,25 +317,26 @@ export default function PublicProfile() {
           </Link>
         </div>
 
-        {isImageOpen && avatarUrl && (
+        {/* ✅ نافذة عرض الصورة المكبرة */}
+        {imageModalUrl && (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-            onClick={() => setIsImageOpen(false)}
+            onClick={() => setImageModalUrl(null)}
           >
             <div
               className="relative flex max-h-[90vh] max-w-4xl items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                onClick={() => setIsImageOpen(false)}
+                onClick={() => setImageModalUrl(null)}
                 className="absolute -top-12 right-0 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:text-[#F9EA02] md:-right-12 md:top-0"
                 title="إغلاق"
               >
                 <X size={24} />
               </button>
               <img
-                src={avatarUrl}
-                alt={fullName}
+                src={imageModalUrl}
+                alt="Enlarged view"
                 className="max-h-[85vh] w-auto max-w-full rounded-2xl border border-white/10 object-contain shadow-2xl"
               />
             </div>

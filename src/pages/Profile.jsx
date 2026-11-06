@@ -20,7 +20,6 @@ const IconFacebook = ({ size = 16, ...props }) => (
   </svg>
 );
 
-// ✅ خففنا الـ blur
 const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 const fixUrl = (url) => {
@@ -58,7 +57,6 @@ function CardHeader({ title, icon: Icon, iconColor = "text-[#F9EA02]/70" }) {
   );
 }
 
-// ✅ أضفنا shrink-0 للـ label و min-w-0 للـ value عشان truncate يشتغل صح
 function Row({ icon: Icon, label, value, ltr }) {
   return (
     <div className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5">
@@ -77,10 +75,10 @@ export default function Profile() {
   const [bike, setBike] = useState(null);
   const [status, setStatus] = useState("loading");
   
-  const [isImageOpen, setIsImageOpen] = useState(false);
+  // ✅ حالة واحدة لعرض الصورة المكبرة (سواء غلاف أو شخصية أو دراجة)
+  const [imageModalUrl, setImageModalUrl] = useState(null);
 
   useEffect(() => {
-    // ✅ فحص بسيط للتوكن (الـ api interceptor بيتكفل بالباقي)
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login", { state: { from: "/profile" } });
@@ -150,13 +148,12 @@ export default function Profile() {
     <>
       <Seo title="الملف الشخصي" description="صفحة الملف الشخصي." noindex={true} />
       <main dir="rtl" className="relative min-h-screen text-white">
-        {/* ✅ شلنا الخلفية المكررة، PageBackground بتظهر من App.jsx */}
-
         <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6 sm:pt-28">
           <div className="grid gap-4 lg:grid-cols-[360px_1fr] lg:gap-5">
             <aside className="lg:sticky lg:top-8 lg:self-start">
               <div className={`${glass} overflow-hidden`}>
-                <div className="relative h-32 w-full bg-gradient-to-br from-[#F9EA02]/30 via-purple-500/20 to-cyan-400/10 sm:h-36">
+                {/* ✅ صورة الغلاف - صارت قابلة للضغط */}
+                <div className="group relative h-32 w-full bg-gradient-to-br from-[#F9EA02]/30 via-purple-500/20 to-cyan-400/10 sm:h-36">
                   {coverUrl && (
                     <img
                       src={coverUrl}
@@ -164,19 +161,21 @@ export default function Profile() {
                       width={1200}
                       height={400}
                       decoding="async"
-                      className="absolute inset-0 size-full object-cover"
+                      className="absolute inset-0 size-full cursor-pointer object-cover transition group-hover:opacity-90"
+                      onClick={() => setImageModalUrl(coverUrl)}
                       onError={(e) => {
                         e.currentTarget.style.display = "none";
                       }}
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 </div>
 
                 <div className="flex flex-col px-6 pb-6">
+                  {/* ✅ الصورة الشخصية */}
                   <div
                     className="group relative -mt-14 cursor-pointer self-center"
-                    onClick={() => avatarUrl && setIsImageOpen(true)}
+                    onClick={() => avatarUrl && setImageModalUrl(avatarUrl)}
                     title="تكبير الصورة"
                   >
                     <div className="size-24 rounded-full bg-gradient-to-br from-[#F9EA02] to-purple-500 p-[3px] transition group-hover:scale-105 sm:size-28">
@@ -336,7 +335,6 @@ export default function Profile() {
                 )}
               </div>
 
-              {/* ✅ خففنا الـ backdrop-blur من 2xl لـ md */}
               <div className="rounded-3xl border border-rose-500/25 bg-rose-500/[0.06] p-5 backdrop-blur-md shadow-xl shadow-black/40">
                 <CardHeader title="الطوارئ" icon={AlertTriangle} iconColor="text-rose-400" />
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -371,7 +369,11 @@ export default function Profile() {
                     </div>
 
                     {hasBikeImage && (
-                      <div className="overflow-hidden rounded-xl border border-white/10 sm:w-48">
+                      // ✅ صورة الدراجة - صارت قابلة للضغط
+                      <div
+                        className="group relative cursor-pointer overflow-hidden rounded-xl border border-white/10 sm:w-48"
+                        onClick={() => setImageModalUrl(bikeImgUrl)}
+                      >
                         <img
                           src={bikeImgUrl}
                           alt="Bike"
@@ -379,7 +381,7 @@ export default function Profile() {
                           height={225}
                           loading="lazy"
                           decoding="async"
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                           style={{ aspectRatio: "16/9" }}
                           onError={(e) => {
                             e.currentTarget.parentElement.style.display = "none";
@@ -414,25 +416,26 @@ export default function Profile() {
           </div>
         </div>
 
-        {isImageOpen && avatarUrl && (
+        {/* ✅ نافذة عرض الصورة المكبرة (Modal) */}
+        {imageModalUrl && (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-            onClick={() => setIsImageOpen(false)}
+            onClick={() => setImageModalUrl(null)}
           >
             <div
               className="relative flex max-h-[90vh] max-w-4xl items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                onClick={() => setIsImageOpen(false)}
+                onClick={() => setImageModalUrl(null)}
                 className="absolute -top-12 right-0 rounded-full bg-white/10 p-2 text-white backdrop-blur-md transition hover:text-[#F9EA02] md:-right-12 md:top-0"
                 title="إغلاق"
               >
                 <X size={24} />
               </button>
               <img
-                src={avatarUrl}
-                alt={fullName}
+                src={imageModalUrl}
+                alt="Enlarged view"
                 className="max-h-[85vh] w-auto max-w-full rounded-2xl border border-white/10 object-contain shadow-2xl"
               />
             </div>
