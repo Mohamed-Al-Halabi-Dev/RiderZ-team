@@ -2,55 +2,77 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    
-    <!-- ✅ تعديل: الصورة لازم تكون في مجلد public عشان تظهر بروابط المشاركة -->
+
     <link rel="icon" type="image/jpeg" href="/og-image.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ✅ [جديد] ربط ملف المانيفست لأندرويد -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ✅ [جديد] إعدادات آيفون (الأيقونة والاسم) -->
+    <link rel="apple-touch-icon" href="/og-image.jpg" />
+    <meta name="apple-mobile-web-app-title" content="RiderZ" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
 
     <title>RiderZ — فريق الدراجات في سوريا</title>
     <meta
       name="description"
-      content="انضم لأقوى فريق دراجات هوائية في سوريا. جولات منظمة، تتبع إحصائياتك، وأصدقاء جدد على الطريق."
+      content="فريق RiderZ فريق دراجات مجتمعي في سوريا، نعمل على نشر ثقافة ركوب الدراجة الهوائية، وننظم جولات ومغامرات على الطريق."
     />
-    <meta name="keywords" content="دراجات، سوريا، دمشق، جولات، ركوب، فريق دراجات، RiderZ , رايدرز" />
+    <meta
+      name="keywords"
+      content="دراجات، سوريا، دمشق، جولات، ركوب، فريق دراجات، RiderZ , رايدرز"
+    />
     <meta name="author" content="Mohamed Al-Halabi" />
     <meta name="robots" content="index, follow" />
-    
-    <!-- ✅ تعديل: ضفنا / في النهاية -->
-    <link rel="canonical" href="https://riderz-team.vercel.app/" />
+
+    <link rel="canonical" href="https://riderz-team.vercel.app" />
 
     <!-- Open Graph (للمشاركة على فيسبوك وواتساب) -->
     <meta property="og:site_name" content="RiderZ" />
     <meta property="og:title" content="RiderZ — فريق الدراجات في سوريا" />
-    <meta property="og:description" content="انضم لأقوى فريق دراجات هوائية في سوريا." />
-    <!-- ✅ تعديل: استخدمنا الرابط الكامل للصورة اللي في مجلد public -->
-    <meta property="og:image" content="https://riderz-team.vercel.app/RiderZLogo.jpg" />
-    <meta property="og:url" content="https://riderz-team.vercel.app/" />
+    <meta
+      property="og:description"
+      content="انضم لأقوى فريق دراجات هوائية في سوريا."
+    />
+    <meta
+      property="og:image"
+      content="https://riderz-team.vercel.app/og-image.jpg"
+    />
+    <meta property="og:url" content="https://riderz-team.vercel.app" />
     <meta property="og:locale" content="ar_SY" />
 
     <!-- Twitter Card (للمشاركة على تويتر) -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site_name" content="RiderZ" />
     <meta name="twitter:title" content="RiderZ — فريق الدراجات في سوريا" />
-    <meta name="twitter:description" content="انضم لأقوى فريق دراجات هوائية في سوريا." />
-    <meta name="twitter:image" content="https://riderz-team.vercel.app/RiderZLogo.jpg" />
-    <meta name="twitter:url" content="https://riderz-team.vercel.app/" />
+    <meta
+      name="twitter:description"
+      content="انضم لأقوى فريق دراجات هوائية في سوريا."
+    />
+    <meta
+      name="twitter:image"
+      content="https://riderz-team.vercel.app/og-image.jpg"
+    />
+    <meta name="twitter:url" content="https://riderz-team.vercel.app" />
     <meta name="twitter:locale" content="ar_SY" />
-    
+
     <meta name="theme-color" content="#F9EA02" />
 
     <!-- ✅ هذا هو الكود السحري اللي بيجبر جوجل يعرض اسم RiderZ بدل Vercel -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "RiderZ",
-      "alternateName": ["فريق RiderZ", "RiderZ Team"],
-      "url": "https://riderz-team.vercel.app/"
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "RiderZ",
+        "alternateName": ["فريق RiderZ", "RiderZ Team"],
+        "url": "https://riderz-team.vercel.app"
+      }
     </script>
-    <!-- ========================================================= -->
-
   </head>
   <body>
     <div id="root"></div>

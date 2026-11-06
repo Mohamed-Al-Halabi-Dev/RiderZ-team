@@ -1,0 +1,24 @@
+{
+  "short_name": "RiderZ",
+  "name": "RiderZ - فريق الدراجات",
+  "description": "انضم لأقوى فريق دراجات هوائية في سوريا.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#F9EA02",
+  "background_color": "#08080c",
+  "icons": [
+    {
+      "src": "/og-image.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/og-image.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

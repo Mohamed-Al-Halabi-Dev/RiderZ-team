@@ -183,7 +183,7 @@ export default function Signup() {
     <>
       <Seo
         title="إنشاء حساب جديد"
-        description="انضم إلى RiderZ وأنشئ حسابك المجاني. ابدأ رحلتك في عالم الدراجات الهوائية."
+        description="انضم إلى RiderZ وأنشئ حسابك . ابدأ رحلتك في عالم الدراجات الهوائية."
         noindex={true}
       />
       <main
