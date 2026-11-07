@@ -9,7 +9,6 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-// ✅ خففنا الـ blur من 2xl لـ md
 const glass =
   "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
@@ -49,7 +48,6 @@ export default function ForgotPassword() {
       dir="rtl"
       className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[#08080c] p-4 py-12 text-white"
     >
-      {/* ✅ شلنا الخلفية المكررة، PageBackground بتظهر من App.jsx */}
 
       <div className={`relative my-8 w-full max-w-md p-6 sm:p-8 ${glass}`}>
         <Link

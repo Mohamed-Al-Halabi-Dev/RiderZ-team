@@ -29,7 +29,6 @@ function FeaturedRide({ ride }) {
           height={600}
           fetchPriority="high"
           decoding="async"
-          // ✅ transition-transform بدل transition
           className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
@@ -114,5 +113,4 @@ function FeaturedRide({ ride }) {
   );
 }
 
-// ✅ memo عشان ما تعيد الرسم لما قائمة الرحلات تتغير
 export default memo(FeaturedRide);

@@ -4,7 +4,7 @@ import api, { API_URL } from "../config/api";
 import { ArrowRight, Search, Trophy, Crown, X, ChevronLeft } from "lucide-react";
 import Seo from "../components/Seo";
 
-// ✅ خففنا الـ blur وضبطنا الـ border
+
 const glass =
   "rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
@@ -57,7 +57,7 @@ export default function Leaderboard() {
       />
       <main dir="rtl" className="relative min-h-screen overflow-hidden text-white">
         <div className="relative mx-auto max-w-3xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
-          {/* ═════ Header ═════ */}
+          
           <div className="mb-8">
             <Link
               to="/"
@@ -81,7 +81,7 @@ export default function Leaderboard() {
             </div>
           </div>
 
-          {/* ═════ البحث ═════ */}
+     
           <div className={`${glass} mb-6 flex items-center gap-3 border-white/10 p-2 ps-4`}>
             <Search size={16} className="shrink-0 text-white/40" />
             <input
@@ -101,21 +101,21 @@ export default function Leaderboard() {
             )}
           </div>
 
-          {/* ═════ Loading ═════ */}
+      
           {loading && (
             <div className="flex justify-center py-20">
               <span className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
             </div>
           )}
 
-          {/* ═════ Empty ═════ */}
+         
           {!loading && filtered.length === 0 && (
             <div className={`${glass} border-white/10 p-12 text-center text-white/40`}>
               {query ? `لا نتائج لـ "${query}"` : "لا يوجد متسابقين."}
             </div>
           )}
 
-          {/* ═════ القائمة ═════ */}
+        
           {!loading && filtered.length > 0 && (
             <div className="space-y-2">
               {filtered.map((user, i) => (
@@ -129,9 +129,7 @@ export default function Leaderboard() {
   );
 }
 
-/* ═══════════════════════════════════════════════
-   Row - صف زجاجي (مع memo)
-═══════════════════════════════════════════════ */
+
 const Row = memo(function Row({ user, rank }) {
   const isTop1 = rank === 1;
   const isTop2 = rank === 2;
@@ -169,7 +167,7 @@ const Row = memo(function Row({ user, rank }) {
       to={`/leaderboard/${user.username}`}
       className={`${glass} group flex items-center gap-3 border p-3 transition hover:border-white/20 sm:gap-4 sm:p-4 ${borderClass}`}
     >
-      {/* ─── الرقم ─── */}
+      
       <div className="flex w-10 shrink-0 flex-col items-center">
         <span dir="ltr" className={`font-mono text-lg font-black leading-none sm:text-xl ${rankColor}`}>
           {String(rank).padStart(2, "0")}
@@ -177,7 +175,6 @@ const Row = memo(function Row({ user, rank }) {
         {isTop1 && <Crown size={12} className="mt-1 text-[#F9EA02]" fill="currentColor" />}
       </div>
 
-      {/* ✅ Avatar: ضفنا loading, width, height, decoding */}
       <div className={`size-11 shrink-0 overflow-hidden rounded-full bg-white/5 sm:size-12 ${ringClass}`}>
         {avatar ? (
           <img
@@ -200,7 +197,7 @@ const Row = memo(function Row({ user, rank }) {
         )}
       </div>
 
-      {/* ─── الاسم ─── */}
+     
       <div className="min-w-0 flex-1">
         <p className={`truncate text-sm font-black transition group-hover:text-[#F9EA02] sm:text-base ${isTop1 ? "text-[#F9EA02]" : "text-white"}`}>
           {user.firstName} {user.lastName}
@@ -210,7 +207,7 @@ const Row = memo(function Row({ user, rank }) {
         </p>
       </div>
 
-      {/* ─── المسافة ─── */}
+    
       <div className="shrink-0 text-end">
         <p dir="ltr" className={`font-mono text-base font-black sm:text-lg ${isTop1 ? "text-[#F9EA02]" : "text-white"}`}>
           {(user.totalKilometers || 0).toLocaleString("en-US")}
@@ -218,7 +215,7 @@ const Row = memo(function Row({ user, rank }) {
         <p className="text-[9px] font-bold uppercase tracking-widest text-white/30">كم</p>
       </div>
 
-      {/* ─── سهم ─── */}
+  
       <ChevronLeft size={16} className="hidden shrink-0 text-white/20 transition group-hover:text-[#F9EA02] sm:block" />
     </Link>
   );

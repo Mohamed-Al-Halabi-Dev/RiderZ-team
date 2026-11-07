@@ -100,7 +100,6 @@ export default function Home() {
       />
 
       <main dir="rtl" className="relative min-h-screen overflow-x-hidden text-white">
-        {/* 1. الهيرو */}
         <section className="relative flex min-h-screen items-center px-4 py-24 sm:px-6">
           <div className="mx-auto w-full max-w-6xl">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
@@ -155,10 +154,8 @@ export default function Home() {
               </div>
 
               <div className="order-2 relative">
-                {/* التوهج اللي ورا الصورة */}
                 <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,rgba(249,234,2,0.3),transparent_70%)]" />
 
-                {/* ✅ رجعنا الـ mask للشكل الحلو، وشلنا الـ drop-shadow الثقيل */}
                 <img
                   src={heroTeam}
                   alt="فريق RiderZ"
@@ -173,7 +170,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 2. أفضل 3 في لوحة الصدارة */}
         <section className="relative px-4 py-16 sm:px-6">
           <div className="mx-auto max-w-5xl">
             <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
@@ -218,7 +214,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 3. أحدث الجولات */}
         <section className="relative px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
@@ -246,7 +241,6 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* ✅ حجزنا مساحة 350px/400px عشان نمنع اهتزاز الصفحة (CLS) */}
             <div className="min-h-[350px] sm:min-h-[400px]">
               {loading ? (
                 <div className="flex justify-center py-10">
@@ -267,7 +261,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 4. ليش RiderZ؟ */}
+      
         <section className="relative px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <div className="mb-14 text-center">
@@ -299,7 +293,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 5. كيف تبدأ؟ */}
+     
         <section className="relative px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <div className="mb-14 text-center">
@@ -479,9 +473,7 @@ export default function Home() {
   );
 }
 
-/* ═══════════════════════════════════════
-   المكونات المساعدة
-═══════════════════════════════════════ */
+
 
 const Podium = memo(function Podium({ topUsers }) {
   const first = topUsers[0];

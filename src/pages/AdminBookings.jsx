@@ -19,7 +19,7 @@ import {
 const glass =
   "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
-// ✅ خلفية كرت الحجز (بدون blur عشان الأداء بالسكرول)
+
 const cardBg =
   "rounded-3xl border border-white/10 bg-[#0d0d10]/80 shadow-lg shadow-black/40";
 

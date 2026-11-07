@@ -46,14 +46,12 @@ export default function Header() {
   return (
     <header className="fixed left-0 right-0 top-0 z-50 w-full border-b border-white/10 bg-[#070707]/60 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 lg:px-8">
-        {/* ═══ الشعار ═══ */}
         <Link
           to="/"
           aria-label="الصفحة الرئيسية - RiderZ"
           className="flex shrink-0 items-center gap-2 transition-opacity hover:opacity-90"
           onClick={() => setOpen(false)}
         >
-          {/* ✅ أضفنا fetchPriority و decoding */}
           <img
             src={logo}
             alt="شعار RiderZ"
@@ -95,7 +93,6 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* ═══ يمين الهيدر (ديسكتوب) ═══ */}
         <div className="hidden items-center gap-2 md:flex">
           {user.isLoggedIn ? (
             <div className="relative" ref={dropdownRef}>
@@ -162,7 +159,6 @@ export default function Header() {
             <Link to="/Login">
               <button
                 type="button"
-                // ✅ transition-colors + active:scale يحتاج transform، فخلينا transition-all بس خفيف
                 className="rounded-full bg-[#F9EA02] px-5 py-2 text-sm font-bold text-[#0B0B0B] transition-all duration-200 hover:bg-[#ffe93a] hover:shadow-[0_0_20px_rgba(249,234,2,0.45)] active:scale-95 lg:px-6 lg:text-base"
               >
                 انضم الآن
@@ -171,7 +167,6 @@ export default function Header() {
           )}
         </div>
 
-        {/* ═══ زر الجوال ═══ */}
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -190,7 +185,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* ═══ قائمة الجوال ═══ */}
       <div
         id="mobile-menu"
         className={`overflow-hidden border-t border-white/10 bg-[#070707]/95 backdrop-blur-md transition-[max-height,opacity] duration-300 ease-in-out md:hidden ${

@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import Seo from "../components/Seo";
 
-// ✅ خففنا الـ blur من 2xl لـ md
 const glass =
   "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
@@ -34,11 +33,9 @@ const STATUS_MAP = {
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80";
 
-// ✅ بما إننا صرنا نستخدم api instance، ما منحتاج API_URL
 const imgFor = (url) =>
   !url || url.includes("example.com") ? FALLBACK_IMG : url;
 
-// ✅ كرت الحجز كـ مكون memo منفصل
 const BookingCard = memo(function BookingCard({ booking, onCancel }) {
   const info = STATUS_MAP[booking.statusBooking] ?? {
     label: booking.statusBooking,

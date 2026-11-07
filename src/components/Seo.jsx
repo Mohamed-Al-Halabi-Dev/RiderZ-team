@@ -1,9 +1,8 @@
 import { Helmet } from "react-helmet-async";
 
-// ⚠️ غيري هاد الدومين للدومين النهائي لما ترفعي الموقع
 const SITE_NAME = "RiderZ";
 const BASE_URL = "https://riderz-team.vercel.app"; 
-const DEFAULT_IMAGE = "https://riderz-team.vercel.app/RiderZLogo.webp"; // تأكدي إنك حطيتي صورة بهذا الاسم بملف public
+const DEFAULT_IMAGE = "https://riderz-team.vercel.app/RiderZLogo.webp"; 
 
 export default function Seo({
   title,
@@ -18,15 +17,12 @@ export default function Seo({
 
   return (
     <Helmet>
-      {/* الأساسيات */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
       
-      {/* إذا كانت صفحة خاصة (زي البروفايل) منع جوجل من أرشفتها */}
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-      {/* Open Graph (فيسبوك وواتساب) */}
       <meta property="og:type" content={type} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
@@ -35,7 +31,6 @@ export default function Seo({
       <meta property="og:locale" content="ar_SY" />
       <meta property="og:site_name" content={SITE_NAME} />
 
-      {/* Twitter (X) */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />

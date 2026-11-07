@@ -52,7 +52,7 @@ export default function PublicProfile() {
   const { username } = useParams();
 
   const [user, setUser] = useState(null);
-  const [bikeImage, setBikeImage] = useState(null); // ✅ حالة لحفظ صورة الدراجة
+  const [bikeImage, setBikeImage] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   
@@ -68,7 +68,6 @@ export default function PublicProfile() {
         if (!data) return setError(true);
         setUser(data);
 
-        // ✅ إذا المستخدم عنده دراجة، بنجيب صورة الدراجة من الـ Endpoint
         if (data.hasBike && data.id) {
           try {
             const bikeRes = await api.get(`/api/bikes/${data.id}`, { signal: ctrl.signal });
@@ -77,7 +76,6 @@ export default function PublicProfile() {
               setBikeImage(fixUrl(bikeData.imageUrl));
             }
           } catch (bikeErr) {
-            // إذا ما في دراجة أو صار خطأ، بنتجاهل وبنعرض الأيقونة العادية
             console.log("No bike image found");
           }
         }
@@ -147,7 +145,6 @@ export default function PublicProfile() {
           </Link>
 
           <div className={`${glass} overflow-hidden`}>
-            {/* ✅ الغلاف - قابل للضغط */}
             <div className="group relative h-36 w-full bg-gradient-to-br from-[#F9EA02]/20 via-purple-500/20 to-cyan-400/10 sm:h-48">
               {coverUrl && (
                 <img
@@ -168,7 +165,6 @@ export default function PublicProfile() {
 
             <div className="relative -mt-16 px-5 pb-6 sm:-mt-20 sm:px-8">
               <div className="flex flex-col items-center text-center sm:flex-row sm:items-end sm:text-start">
-                {/* ✅ الصورة الشخصية - قابلة للضغط */}
                 <div
                   className="group relative shrink-0 cursor-pointer"
                   onClick={() => avatarUrl && setImageModalUrl(avatarUrl)}
@@ -235,7 +231,6 @@ export default function PublicProfile() {
               </div>
             </div>
 
-            {/* ✅ كارت الدراجة - بيظهر الصورة إذا موجودة، أو الأيقونة إذا ما في صورة */}
             <div className={`${glass} flex items-center gap-4 p-5`}>
               {bikeImage ? (
                 <div
@@ -317,7 +312,6 @@ export default function PublicProfile() {
           </Link>
         </div>
 
-        {/* ✅ نافذة عرض الصورة المكبرة */}
         {imageModalUrl && (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"

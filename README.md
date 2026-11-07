@@ -1,16 +1,28 @@
-# React + Vite
+# RiderZ - Cycling Community Platform (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A web application built for the **RiderZ** cycling team in Syria. The goal was to create a centralized platform where members can discover upcoming rides, book their seats, manage their profiles, and track their stats on a leaderboard.
 
-Currently, two official plugins are available:
+The backend is a private ASP.NET Core API, and this repository contains the frontend built with React and Vite.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Live Demo:** [riderz-team.vercel.app](https://riderz-team.vercel.app)
 
-## React Compiler
+## Built With
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19.2.8** (Vite)
+- **Tailwind CSS** (for styling)
+- **React Router v7** (Routing)
+- **Axios** (with custom interceptors for JWT & automatic refresh tokens)
+- **Lucide React** (Icons)
+- **Vercel** (Deployment)
 
-## Expanding the Oxlint configuration
+## What's inside
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Authentication flow:** Login, Signup, Forgot/Reset Password.
+- **Ride Discovery:** Browse rides, filter by level, and view full details including routes and maps.
+- **Booking System:** Book a ride, choose add-ons (helmet/bike), and upload a payment receipt for admin review.
+- **User Profiles:** Customize avatars, cover photos, bike details, and social links.
+- **Leaderboard:** A dynamic podium showing the top riders based on kilometers ridden.
+- **Admin Dashboard:** A full control panel to manage users, create rides, and approve/reject bookings.
+- **Performance & UI:** Fully responsive, lazy-loaded pages, and optimized images (WebP).
+
+## Getting Started

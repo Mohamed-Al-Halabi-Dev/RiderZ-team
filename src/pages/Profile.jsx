@@ -75,7 +75,6 @@ export default function Profile() {
   const [bike, setBike] = useState(null);
   const [status, setStatus] = useState("loading");
   
-  // ✅ حالة واحدة لعرض الصورة المكبرة (سواء غلاف أو شخصية أو دراجة)
   const [imageModalUrl, setImageModalUrl] = useState(null);
 
   useEffect(() => {
@@ -152,7 +151,6 @@ export default function Profile() {
           <div className="grid gap-4 lg:grid-cols-[360px_1fr] lg:gap-5">
             <aside className="lg:sticky lg:top-8 lg:self-start">
               <div className={`${glass} overflow-hidden`}>
-                {/* ✅ صورة الغلاف - صارت قابلة للضغط */}
                 <div className="group relative h-32 w-full bg-gradient-to-br from-[#F9EA02]/30 via-purple-500/20 to-cyan-400/10 sm:h-36">
                   {coverUrl && (
                     <img
@@ -172,7 +170,6 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-col px-6 pb-6">
-                  {/* ✅ الصورة الشخصية */}
                   <div
                     className="group relative -mt-14 cursor-pointer self-center"
                     onClick={() => avatarUrl && setImageModalUrl(avatarUrl)}
@@ -369,7 +366,6 @@ export default function Profile() {
                     </div>
 
                     {hasBikeImage && (
-                      // ✅ صورة الدراجة - صارت قابلة للضغط
                       <div
                         className="group relative cursor-pointer overflow-hidden rounded-xl border border-white/10 sm:w-48"
                         onClick={() => setImageModalUrl(bikeImgUrl)}
@@ -416,7 +412,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* ✅ نافذة عرض الصورة المكبرة (Modal) */}
         {imageModalUrl && (
           <div
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"

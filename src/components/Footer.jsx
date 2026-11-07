@@ -15,12 +15,10 @@ const IconFacebook = ({ size = 16, ...props }) => (
   </svg>
 );
 
-// ✅ خففنا الـ blur
 const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 function Footer() {
   return (
-    // ✅ شلنا bg-[#08080c] عشان PageBackground تظهر من ورا
     <footer className="relative overflow-hidden text-white">
       <div className="relative border-t border-white/10">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#F9EA02]/50 to-transparent" />
@@ -28,7 +26,6 @@ function Footer() {
 
       <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-          {/* العمود 1: الشعار */}
           <div className="lg:col-span-1">
             <Link to="/" className="group mb-4 inline-flex items-center gap-2">
               <img
@@ -59,7 +56,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* العمود 2 */}
           <div>
             <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-[#F9EA02]">روابط سريعة</h3>
             <ul className="space-y-2.5">
@@ -84,7 +80,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* العمود 3 */}
           <div>
             <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-[#F9EA02]">حسابي</h3>
             <ul className="space-y-2.5">
@@ -109,7 +104,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* العمود 4 */}
           <div>
             <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-[#F9EA02]">تواصل معنا</h3>
             <ul className="space-y-3">
@@ -135,7 +129,6 @@ function Footer() {
           </div>
         </div>
 
-        {/* شريط الحقوق */}
         <div className={`${glass} mt-12 flex flex-col items-center justify-between gap-3 px-6 py-4 sm:flex-row`}>
           <p className="text-xs font-bold text-white/50">
             © 2026 <span className="text-[#F9EA02]">RiderZ</span> — جميع الحقوق محفوظة
@@ -145,7 +138,6 @@ function Footer() {
           </p>
         </div>
 
-        {/* Developed by */}
         <p
           dir="ltr"
           className="mt-4 text-center text-xs font-medium text-white/35"
@@ -165,5 +157,4 @@ function Footer() {
   );
 }
 
-// ✅ memo عشان ما ترجع ترسم لما الـ auth يتغير
 export default memo(Footer);

@@ -1,8 +1,6 @@
 import { getStatus } from "../constants/statuses";
 
-/* ═══════════════════════════════════════════════
-   الفلترة — بالعنوان، المسار، نقطة الانطلاق
-   ═══════════════════════════════════════════════ */
+
 
 export function filterRides(rides, query) {
   const q = query.trim().toLowerCase();

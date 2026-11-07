@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
       finalRole = finalRole || decoded.role;
     }
 
-    saveAuth({ id: finalId, role: finalRole, token, refreshToken }); // ✅ ضفنا refreshToken
+    saveAuth({ id: finalId, role: finalRole, token, refreshToken }); 
     setUser({ id: finalId, role: finalRole, token, isLoggedIn: true });
   };
 

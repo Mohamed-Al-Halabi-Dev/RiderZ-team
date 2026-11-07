@@ -12,7 +12,7 @@ import {
 
 import heroTeam from "/Hero-team-cropped.webp";
 
-// ✅ خففنا الـ blur
+
 const glass =
   "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
@@ -75,7 +75,7 @@ export default function About() {
   ];
 
   return (
-    // ✅ شلنا الخلفية المكررة
+   
     <main dir="rtl" className="relative min-h-screen text-white">
       <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
         <Link
@@ -87,7 +87,7 @@ export default function About() {
 
         <section className="grid gap-4 lg:grid-cols-2">
           <div className={`${glass} relative overflow-hidden p-6 sm:p-10`}>
-            {/* ✅ استبدلنا blur-3xl بـ radial-gradient */}
+           
             <div className="pointer-events-none absolute -start-16 -top-16 size-48 rounded-full bg-[radial-gradient(circle,rgba(249,234,2,0.2),transparent_70%)]" />
             <div className="relative">
               <p className="font-mono text-[10px] font-black uppercase tracking-[0.3em] text-[#F9EA02]">

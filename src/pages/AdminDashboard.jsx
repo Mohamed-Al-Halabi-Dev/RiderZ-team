@@ -177,7 +177,6 @@ const StatCard = memo(function StatCard({ icon: Icon, label, value, loading, acc
   return (
     <Link
       to={link}
-      // ✅ غيرنا scale لـ translate عشان ما يعمل repaint للـ backdrop-blur
       className={`${glass} group relative overflow-hidden p-6 transition-all hover:-translate-y-1 ${a.border} ${a.glow}`}
     >
       <div className="flex items-start justify-between">

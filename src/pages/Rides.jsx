@@ -13,7 +13,6 @@ import { useRides } from "../hooks/useRides";
 import { filterRides, pickFeatured, pickRest } from "../lib/ridesHelpers";
 import Seo from "../components/Seo";
 
-// ✅ خففنا الـ blur
 const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 export default function Rides() {
@@ -47,7 +46,6 @@ export default function Rides() {
         description="استكشف أقوى جولات الدراجات في سوريا. احجز مكانك، اختر دراجتك، وانضم للمغامرة."
         canonicalPath="/rides"
       />
-      {/* ✅ شلنا bg-[#08080c] عشان PageBackground تظهر من ورا */}
       <main
         dir="rtl"
         className="relative min-h-screen overflow-hidden px-4 pb-16 pt-24 text-white sm:px-6 sm:pt-28"

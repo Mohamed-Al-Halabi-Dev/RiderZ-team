@@ -330,7 +330,6 @@ export default function BookingModal({ ride, onClose, onConfirm }) {
             className="absolute inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-4"
             onClick={() => !loading && setShowTerms(false)}
           >
-            {/* ✅ شلنا backdrop-blur-xl — bg-[#0a0a0a]/95 كافي */}
             <div
               className="w-full max-w-sm rounded-t-[28px] border border-white/10 bg-[#0a0a0a]/95 pb-6 shadow-2xl sm:rounded-3xl"
               onClick={(e) => e.stopPropagation()}

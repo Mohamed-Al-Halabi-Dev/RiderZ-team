@@ -39,7 +39,6 @@ function formatDuration(minutes) {
   return `${mins} دقيقة`;
 }
 
-// ✅ خففنا الـ blur
 const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
 export default function RideDetails() {
@@ -121,7 +120,6 @@ export default function RideDetails() {
     <>
       <Seo title={`${ride.title} | جولات RiderZ`} description={seoDescription} canonicalPath={`/rides/${ride.id}`} image={imgFor(ride)} />
 
-      {/* ✅ شلنا bg-[#08080c] عشان PageBackground تظهر من ورا */}
       <main dir="rtl" className="relative min-h-screen pb-20 pt-24 text-white sm:pt-28">
 
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">

@@ -1,9 +1,8 @@
 const TOKEN_KEY = "token";
-const REFRESH_TOKEN_KEY = "refreshToken"; // ✅ جديد
+const REFRESH_TOKEN_KEY = "refreshToken"; 
 const USER_ID_KEY = "userId";
 const ROLE_KEY = "role";
 
-// فك الـ JWT payload
 export function decodeToken(token) {
   if (!token) return null;
   try {
@@ -17,7 +16,6 @@ export function decodeToken(token) {
   }
 }
 
-// استخراج id و role من الـ JWT
 export function getUserFromToken(token) {
   const payload = decodeToken(token);
   if (!payload) return { id: null, role: null };
@@ -41,14 +39,14 @@ export function getUserFromToken(token) {
 
 export function saveAuth({ id, role, token, refreshToken }) {
   localStorage.setItem(TOKEN_KEY, token);
-  if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken); // ✅ جديد
+  if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken); 
   if (id) localStorage.setItem(USER_ID_KEY, String(id));
   if (role) localStorage.setItem(ROLE_KEY, role);
 }
 
 export function clearAuth() {
   localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_TOKEN_KEY); // ✅ جديد
+  localStorage.removeItem(REFRESH_TOKEN_KEY); 
   localStorage.removeItem(USER_ID_KEY);
   localStorage.removeItem(ROLE_KEY);
 }
@@ -62,7 +60,7 @@ export function getToken() {
 }
 
 export function getRefreshToken() {
-  return localStorage.getItem(REFRESH_TOKEN_KEY); // ✅ جديد
+  return localStorage.getItem(REFRESH_TOKEN_KEY); 
 }
 
 export function getUserId() {

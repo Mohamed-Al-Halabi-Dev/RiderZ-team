@@ -16,7 +16,6 @@ export function useRides() {
     setPage(1);
     setHasMore(true);
 
-    // ✅ صار أسهل: api بدل axios + API_URL
     api
       .get("/api/rides", {
         params: { page: 1, pageSize: PAGE_SIZE },

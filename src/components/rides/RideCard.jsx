@@ -19,7 +19,6 @@ function RideCard({ ride }) {
   return (
     <Link
       to={`/rides/${ride.id}`}
-      // ✅ transition-colors + transition-shadow بدل transition-all
       className="group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0c0c0e] shadow-lg transition-[border-color,box-shadow] duration-300 hover:border-white/20 hover:shadow-xl"
     >
       <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden">
@@ -30,7 +29,6 @@ function RideCard({ ride }) {
           height={400}
           loading="lazy"
           decoding="async"
-          // ✅ transition-transform
           className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
@@ -106,5 +104,4 @@ function RideCard({ ride }) {
   );
 }
 
-// ✅ memo — مهم جداً لأنها في list
 export default memo(RideCard);

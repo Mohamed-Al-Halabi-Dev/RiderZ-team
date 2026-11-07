@@ -7,11 +7,9 @@ import {
 import { useAuth } from "../context/AuthContext";
 import Seo from "../components/Seo";
 
-// ✅ خففنا الـ blur من 2xl لـ md
 const glass =
   "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-xl shadow-black/40";
 
-// ✅ غيرنا transition لـ transition-colors في الحقول
 const fieldWrapper =
   "flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-3 transition-colors focus-within:border-[#F9EA02]/50 focus-within:ring-2 focus-within:ring-[#F9EA02]/20";
 
@@ -92,7 +90,6 @@ export default function Login() {
         dir="rtl"
         className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[#08080c] p-4 py-12 text-white"
       >
-        {/* ✅ شلنا الخلفية المكررة، PageBackground بتظهر من App.jsx */}
 
         <div className={`relative my-8 w-full max-w-md p-6 sm:p-8 ${glass}`}>
           <Link

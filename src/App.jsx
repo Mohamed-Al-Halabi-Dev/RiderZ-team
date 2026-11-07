@@ -4,9 +4,10 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AdminRoute from "./components/AdminRoute";
-import PageBackground from "./components/PageBackground"; // ✅ استيراد الخلفية
+import PageBackground from "./components/PageBackground"; 
+import ScrollToTop from "./components/ScrollToTop";
 
-// ✅ Lazy Loading: الصفحات ما بتنزل إلا لما تحتاجها
+
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Rides = lazy(() => import("./pages/Rides"));
@@ -29,7 +30,7 @@ const AdminBookings = lazy(() => import("./pages/AdminBookings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Unauthorized = lazy(() => import("./pages/Unauthorized"));
 
-/* ═══ شاشة التحميل أثناء تنقل الصفحات (Lazy Loading) ═══ */
+
 const PageLoader = memo(function PageLoader() {
   return (
     <div className="grid min-h-[60vh] place-items-center">
@@ -38,7 +39,7 @@ const PageLoader = memo(function PageLoader() {
   );
 });
 
-/* ═══ حماية الصفحات ═══ */
+
 function RequireAuth({ children }) {
   const { user } = useAuth();
   const location = useLocation();
@@ -61,16 +62,17 @@ function GuestOnly({ children }) {
 function AppLayout() {
   return (
     <div className="relative flex min-h-screen flex-col bg-[#08080c]">
-      {/* ✅ الخلفية هنا مرة وحدة */}
+  
       <PageBackground />
       
-      {/* ✅ z-10 عشان المحتوى يطلع فوق الخلفية */}
+     
       <div className="relative z-10 flex min-h-screen flex-col">
         <Header />
+           <ScrollToTop />
         <main className="flex-1">
           <Suspense fallback={<PageLoader />}>
             <Routes>
-              {/* ═══ عام ═══ */}
+              
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/rides" element={<Rides />} />
@@ -79,18 +81,16 @@ function AppLayout() {
               <Route path="/leaderboard/:username" element={<PublicProfile />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
 
-              {/* ═══ ضيف فقط ═══ */}
               <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
               <Route path="/signup" element={<GuestOnly><SignUp /></GuestOnly>} />
               <Route path="/forgot-password" element={<GuestOnly><ForgotPassword /></GuestOnly>} />
               <Route path="/reset-password" element={<GuestOnly><ResetPassword /></GuestOnly>} />
 
-              {/* ═══ محمي (تسجيل دخول) ═══ */}
               <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
               <Route path="/profile/edit" element={<RequireAuth><EditProfile /></RequireAuth>} />
               <Route path="/bookings/my" element={<RequireAuth><MyBookings /></RequireAuth>} />
 
-              {/* ═══ أدمن / مشرف ═══ */}
+            
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<AdminUsers />} />

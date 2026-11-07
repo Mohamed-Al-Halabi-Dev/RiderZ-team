@@ -8,14 +8,12 @@ export default function SearchInput({
 }) {
   return (
     <div className="relative w-full">
-      {/* أيقونة البحث — على اليسار */}
       <Search
         size={20}
         strokeWidth={2.5}
         className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-white/40"
       />
 
-      {/* الحقل */}
       <input
         type="search"
         value={value}
@@ -28,7 +26,6 @@ export default function SearchInput({
                    focus:ring-2 focus:ring-[#F9EA02]/25"
       />
 
-      {/* زر المسح — على اليمين */}
       {value && (
         <button
           type="button"
