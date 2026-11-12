@@ -186,7 +186,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 2. أفضل 3 في لوحة الصدارة */}
+    
         <section className="relative px-4 py-16 sm:px-6">
           <div className="mx-auto max-w-5xl">
             <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
@@ -230,18 +230,18 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ✅ 3. قسم الكورسات التدريبية (ستايل زجاجي أنيق) */}
+       
         <section className="relative px-4 py-12 sm:px-6">
           <div className="mx-auto max-w-5xl">
             <div className={`${glass} relative overflow-hidden p-8 sm:p-12`}>
               
-              {/* توهج أصفر خلفي */}
+      
               <div className="pointer-events-none absolute -top-32 -end-32 size-[400px] rounded-full bg-[#F9EA02]/15 blur-[100px]" />
               <div className="pointer-events-none absolute -bottom-32 -start-32 size-[400px] rounded-full bg-purple-500/10 blur-[100px]" />
 
               <div className="relative z-10 flex flex-col items-center justify-between gap-8 md:flex-row md:items-center">
                 
-                {/* الجانب النصي والأيقونة */}
+               
                 <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-start">
                   <div className="grid size-20 shrink-0 place-items-center rounded-3xl bg-[#F9EA02]/10 border border-[#F9EA02]/20 text-[#F9EA02] shadow-[inset_0_0_20px_rgba(249,234,2,0.1)]">
                     <Bike size={36} strokeWidth={2} />
@@ -258,10 +258,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* زر الواتساب (متوافق مع ستايل الموقع) */}
+               
                 <a
-                  // ⚠️ غير رقم الواتساب هون
-                  href="https://wa.me/963999999999?text=مرحباً، بدي أستفسر عن كورسات تعلّم ركوب الدراجة"
+             
+                  href="https://wa.me/963935874582?text=مرحباً، بدي أستفسر عن كورسات تعلّم ركوب الدراجة"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex w-full shrink-0 items-center justify-center gap-2.5 rounded-2xl bg-[#F9EA02] px-8 py-4 text-sm font-black text-black shadow-lg shadow-[#F9EA02]/20 transition-all hover:scale-[1.02] hover:bg-[#F9EA02]/90 hover:shadow-[0_0_30px_rgba(249,234,2,0.4)] active:scale-95 sm:w-auto"
@@ -278,7 +278,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 4. أحدث الجولات */}
+      
         <section className="relative px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
@@ -326,7 +326,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 5. ليش RiderZ */}
+   
         <section className="relative px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <div className="mb-14 text-center">
@@ -334,7 +334,7 @@ export default function Home() {
                 ليش تنضم لـ <span className="text-[#F9EA02]">RiderZ</span>؟
               </h2>
               <p className="mx-auto mt-4 max-w-xl text-white/50">
-                نحن مش بس فريق دراجات، نحن عائلة. إليك ما يميزنا.
+              لأننا لا نترك أحدا وحيدا على طريق, نعلم نشجع ونمنح كل دراج مايحتاجه من نصائح وتقنيات تجعله أقوى وأثبت في كل رايد , هنا تجد من يوجهك ومن يشد بيدك ومن يفرح بتقدمك
               </p>
             </div>
 

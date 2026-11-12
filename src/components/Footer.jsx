@@ -43,12 +43,12 @@ function Footer() {
             </p>
 
             <div className="mt-6 flex gap-2">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://www.instagram.com/riderz4ever" target="_blank" rel="noopener noreferrer"
                  aria-label="Instagram"
                  className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition-colors hover:border-[#E4405F]/40 hover:bg-[#E4405F]/10 hover:text-[#E4405F]">
                 <IconInstagram size={16} />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+              <a href="www.facebook.com/riderz4ever" target="_blank" rel="noopener noreferrer"
                  aria-label="Facebook"
                  className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition-colors hover:border-[#1877F2]/40 hover:bg-[#1877F2]/10 hover:text-[#1877F2]">
                 <IconFacebook size={16} />
