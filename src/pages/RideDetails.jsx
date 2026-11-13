@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api, { API_URL } from "../config/api";
-import { getToken } from "../lib/auth";
+// ✅ شلنا getToken
 import {
   MapPin, Calendar, Clock, Route as RouteIcon, Users, UserCircle,
   ShieldCheck, Loader2, XCircle, AlertTriangle, Map, ExternalLink,
@@ -11,6 +11,7 @@ import { getLevel } from "../constants/levels";
 import { getStatus } from "../constants/statuses";
 import BookingModal from "../components/rides/BookingModal";
 import Seo from "../components/Seo";
+import { useAuth } from "../context/AuthContext"; // ✅ ضفنا الاستيراد
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1200&q=80";
 
@@ -44,6 +45,7 @@ const glass = "rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-
 export default function RideDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth(); // ✅ جديد: حالة المستخدم من الـ Context
 
   const [ride, setRide] = useState(null);
   const [status, setStatus] = useState("loading");
@@ -56,8 +58,9 @@ export default function RideDetails() {
   useEffect(() => {
     const ctrl = new AbortController();
     const fetchRide = api.get(`/api/rides/${id}`, { signal: ctrl.signal });
-    const token = getToken();
-    const fetchUserBookings = token
+
+    // ✅ بدل getToken()
+    const fetchUserBookings = user.isLoggedIn
       ? api.get("/api/bookings/my", { signal: ctrl.signal }).catch(() => ({ data: { data: [] } }))
       : Promise.resolve({ data: { data: [] } });
 
@@ -76,10 +79,14 @@ export default function RideDetails() {
       .finally(() => setCheckingBooking(false));
 
     return () => ctrl.abort();
-  }, [id]);
+  }, [id, user.isLoggedIn]); // ✅ ضفنا user.isLoggedIn
 
   const handleOpenBooking = () => {
-    if (!getToken()) { navigate("/login", { state: { from: `/rides/${id}` } }); return; }
+    // ✅ بدل getToken()
+    if (!user.isLoggedIn) {
+      navigate("/login", { state: { from: `/rides/${id}` } });
+      return;
+    }
     setBookingOpen(true);
   };
 
@@ -121,7 +128,6 @@ export default function RideDetails() {
       <Seo title={`${ride.title} | جولات RiderZ`} description={seoDescription} canonicalPath={`/rides/${ride.id}`} image={imgFor(ride)} />
 
       <main dir="rtl" className="relative min-h-screen pb-20 pt-24 text-white sm:pt-28">
-
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-6 flex items-center gap-2 text-sm text-white/40">
             <Link to="/rides" className="transition-colors hover:text-white">الجولات</Link>
@@ -130,7 +136,6 @@ export default function RideDetails() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-
             <div className="min-w-0 space-y-6">
               <div className={`${glass} overflow-hidden p-2`}>
                 <div className="aspect-video overflow-hidden rounded-2xl">

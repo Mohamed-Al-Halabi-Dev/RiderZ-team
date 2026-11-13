@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { getLevel } from "../constants/levels";
 import Seo from "../components/Seo";
+import { useAuth } from "../context/AuthContext"; // ✅ ضفنا الاستيراد
 
 const IconInstagram = ({ size = 16, ...props }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -71,15 +72,15 @@ function Row({ icon: Icon, label, value, ltr }) {
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { user: authUser, logout } = useAuth(); // ✅ جديد: منستخدم الـ Context
   const [user, setUser] = useState(null);
   const [bike, setBike] = useState(null);
   const [status, setStatus] = useState("loading");
-  
   const [imageModalUrl, setImageModalUrl] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    // ✅ بدل localStorage.getItem("token")
+    if (!authUser.isLoggedIn) {
       navigate("/login", { state: { from: "/profile" } });
       return;
     }
@@ -97,19 +98,19 @@ export default function Profile() {
       .catch((err) => {
         if (err.name === "CanceledError") return;
         if (err.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
+          // ✅ بدل localStorage.removeItem("token")، منستخدم logout من الـ Context
+          logout();
         } else {
           setStatus("error");
         }
       });
     return () => ctrl.abort();
-  }, [navigate]);
+  }, [navigate, authUser.isLoggedIn, logout]); // ✅ ضفناهم للـ dependencies
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("role");
+  const handleLogout = async () => {
+    // ✅ بدل ما نمسح من localStorage، منستخدم logout من الـ Context
+    // (وهي بتمسح الكوكي من السيرفر والذاكرة)
+    await logout();
     navigate("/login", { replace: true });
   };
 
