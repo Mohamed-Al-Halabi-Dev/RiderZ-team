@@ -1,29 +1,36 @@
 import axios from "axios";
-import {
-  getToken,
-  getRefreshToken,
-  saveAuth,
-  clearAuth,
-  getUserId,
-  getRole,
-} from "../lib/auth";
+import { clearAuth } from "../lib/auth";
 
-export const API_URL = import.meta.env.VITE_API_URL || "https://mohameddev12-001-site1.ftempurl.com";
+export const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://mohameddev12-001-site1.ftempurl.com";
 
-const api = axios.create({ baseURL: API_URL });
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true, // ✅ ضروري جداً لتبادل الكوكيز بين Vercel و myASP
+});
 
+// ✅ Access Token في الذاكرة (مش localStorage)
+let accessToken = null;
+
+export const setAccessToken = (token) => {
+  accessToken = token;
+};
+
+export const getAccessToken = () => accessToken;
+
+// ✅ Request Interceptor: بيضيف التوكن من الذاكرة
 api.interceptors.request.use(
   (config) => {
-    const token = getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ✅ إدارة الـ Refresh Token
+// ✅ Response Interceptor: بيعالج 401 ويجدد التوكن
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -41,8 +48,10 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // ✅ ما نحاول نجدد لو الطلب نفسه تبع login/register/refresh
       if (
         originalRequest.url.includes("/api/auth/login") ||
+        originalRequest.url.includes("/api/auth/register") ||
         originalRequest.url.includes("/api/auth/refresh-token")
       ) {
         return Promise.reject(error);
@@ -62,39 +71,24 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      const refreshToken = getRefreshToken();
-
-      if (!refreshToken) {
-        clearAuth();
-        if (window.location.pathname !== "/login") {
-          window.location.href = "/login";
-        }
-        return Promise.reject(error);
-      }
-
       try {
-        const response = await axios.post(
-          `${API_URL}/api/auth/refresh-token`,
-          { refreshToken }
-        );
+        // ✅ الـ Refresh Token بالكوكي، ما منحتاج نبعته بالـ body
+        const response = await api.post("/api/auth/refresh-token");
+        const data = response.data?.data || {};
 
-        const newData = response.data.data;
+        // ✅ ندعم الشكلين (accessToken مباشرة أو token.token)
+        const newToken = data.accessToken || data.token?.token;
+        if (!newToken) throw new Error("No access token in refresh response");
 
-        saveAuth({
-          id: newData.id || getUserId(),
-          role: newData.role || getRole(),
-          token: newData.token,
-          refreshToken: newData.refreshToken,
-        });
+        setAccessToken(newToken);
+        processQueue(null, newToken);
 
-        api.defaults.headers.common["Authorization"] = `Bearer ${newData.token}`;
-        processQueue(null, newData.token);
-
-        originalRequest.headers.Authorization = `Bearer ${newData.token}`;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         clearAuth();
+        setAccessToken(null);
         if (window.location.pathname !== "/login") {
           window.location.href = "/login";
         }
@@ -109,6 +103,4 @@ api.interceptors.response.use(
 );
 
 export default api;
-
-
 export const PAGE_SIZE = 12;

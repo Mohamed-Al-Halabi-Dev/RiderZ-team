@@ -4,9 +4,8 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AdminRoute from "./components/AdminRoute";
-import PageBackground from "./components/PageBackground"; 
+import PageBackground from "./components/PageBackground";
 import ScrollToTop from "./components/ScrollToTop";
-
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
@@ -30,7 +29,6 @@ const AdminBookings = lazy(() => import("./pages/AdminBookings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Unauthorized = lazy(() => import("./pages/Unauthorized"));
 
-
 const PageLoader = memo(function PageLoader() {
   return (
     <div className="grid min-h-[60vh] place-items-center">
@@ -39,6 +37,17 @@ const PageLoader = memo(function PageLoader() {
   );
 });
 
+// ✅ شاشة تحميل كاملة (تظهر لحظة ما التطبيق يطلب Refresh Token من الكوكي)
+const FullPageLoader = memo(function FullPageLoader() {
+  return (
+    <div className="grid min-h-screen place-items-center bg-[#08080c]">
+      <div className="flex flex-col items-center gap-3">
+        <span className="size-10 animate-spin rounded-full border-2 border-white/10 border-t-[#F9EA02]" />
+        <span className="text-xs font-bold text-white/40">جارٍ التحميل...</span>
+      </div>
+    </div>
+  );
+});
 
 function RequireAuth({ children }) {
   const { user } = useAuth();
@@ -60,19 +69,24 @@ function GuestOnly({ children }) {
 }
 
 function AppLayout() {
+  // ✅ نستنى الـ bootstrapping يخلص قبل ما نعرض أي شي
+  // عشان نمنع وميض "غير مسجل دخول" لحظة فتح الموقع
+  const { bootstrapping } = useAuth();
+
+  if (bootstrapping) {
+    return <FullPageLoader />;
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col bg-[#08080c]">
-  
       <PageBackground />
-      
-     
+
       <div className="relative z-10 flex min-h-screen flex-col">
         <Header />
-           <ScrollToTop />
+        <ScrollToTop />
         <main className="flex-1">
           <Suspense fallback={<PageLoader />}>
             <Routes>
-              
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/rides" element={<Rides />} />
@@ -90,7 +104,6 @@ function AppLayout() {
               <Route path="/profile/edit" element={<RequireAuth><EditProfile /></RequireAuth>} />
               <Route path="/bookings/my" element={<RequireAuth><MyBookings /></RequireAuth>} />
 
-            
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
@@ -101,7 +114,6 @@ function AppLayout() {
                 <Route path="/admin/bookings" element={<AdminBookings />} />
               </Route>
 
-              {/* ═══ 404 ═══ */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

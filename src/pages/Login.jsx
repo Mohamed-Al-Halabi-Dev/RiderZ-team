@@ -51,20 +51,34 @@ export default function Login() {
       };
 
       const res = await api.post("/api/auth/login", body);
+      const payload = res.data?.data || {};
 
-      const data = res.data?.data?.token;
+      // ✅ دعم شكلين للـ response (شكل جديد وشكل قديم)
+      let id, role, accessToken;
+      if (payload.accessToken) {
+        // الشكل الجديد النظيف: { accessToken, id, role }
+        accessToken = payload.accessToken;
+        id = payload.id;
+        role = payload.role;
+      } else if (payload.token?.token) {
+        // الشكل القديم: { token: { id, role, token } }
+        accessToken = payload.token.token;
+        id = payload.token.id;
+        role = payload.token.role;
+      } else if (typeof payload.token === "string") {
+        // شكل بديل: { token: "jwt...", id, role }
+        accessToken = payload.token;
+        id = payload.id;
+        role = payload.role;
+      }
 
-      if (!data?.token) {
+      if (!accessToken) {
         setError("رد غير متوقع من السيرفر.");
         return;
       }
 
-      login({
-        id: data.id,
-        role: data.role,
-        token: data.token,
-        refreshToken: data.refreshToken,
-      });
+      // ✅ الـ login بتخزن الـ accessToken بالذاكرة والبيانات بالـ localStorage
+      login({ id, role, accessToken });
 
       navigate(from, { replace: true });
     } catch (err) {
@@ -90,7 +104,6 @@ export default function Login() {
         dir="rtl"
         className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-[#08080c] p-4 py-12 text-white"
       >
-
         <div className={`relative my-8 w-full max-w-md p-6 sm:p-8 ${glass}`}>
           <Link
             to="/"

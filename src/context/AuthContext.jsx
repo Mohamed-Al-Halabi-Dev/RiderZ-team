@@ -1,8 +1,14 @@
-import { createContext, useContext, useState, useMemo } from "react";
 import {
-  saveAuth,
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
+import api, { setAccessToken } from "../config/api";
+import {
+  saveUserData,
   clearAuth,
-  getToken,
   getUserId,
   getRole,
   getUserFromToken,
@@ -11,21 +17,54 @@ import {
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const token = getToken();
-    if (!token) {
-      return { id: null, role: null, token: null, isLoggedIn: false };
-    }
-    const decoded = getUserFromToken(token);
-    return {
-      id: decoded.id || getUserId(),
-      role: decoded.role || getRole(),
-      token,
-      isLoggedIn: true,
-    };
-  });
+  const [user, setUser] = useState({ id: null, role: null, isLoggedIn: false });
+  const [bootstrapping, setBootstrapping] = useState(true);
 
-  const login = ({ id, role, token, refreshToken }) => {
+  // ✅ عند تحميل الموقع، نحاول نجيب Access Token جديد عبر الكوكي
+  useEffect(() => {
+    let cancelled = false;
+
+    const bootstrap = async () => {
+      try {
+        const res = await api.post("/api/auth/refresh-token");
+        if (cancelled) return;
+
+        const data = res.data?.data || {};
+        const newToken = data.accessToken || data.token?.token;
+
+        if (!newToken) {
+          setBootstrapping(false);
+          return;
+        }
+
+        setAccessToken(newToken);
+
+        const decoded = getUserFromToken(newToken);
+        const finalId = data.id || decoded.id || getUserId();
+        const finalRole = data.role || decoded.role || getRole();
+
+        saveUserData({ id: finalId, role: finalRole });
+        setUser({ id: finalId, role: finalRole, isLoggedIn: true });
+      } catch {
+        // ما في كوكي صالحة → المستخدم مش مسجل دخول
+        clearAuth();
+        setAccessToken(null);
+      } finally {
+        if (!cancelled) setBootstrapping(false);
+      }
+    };
+
+    bootstrap();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // ✅ دالة تسجيل الدخول (تاخد accessToken مش token)
+  const login = ({ id, role, accessToken: token }) => {
+    if (token) setAccessToken(token);
+
     let finalId = id;
     let finalRole = role;
 
@@ -35,13 +74,20 @@ export function AuthProvider({ children }) {
       finalRole = finalRole || decoded.role;
     }
 
-    saveAuth({ id: finalId, role: finalRole, token, refreshToken }); 
-    setUser({ id: finalId, role: finalRole, token, isLoggedIn: true });
+    saveUserData({ id: finalId, role: finalRole });
+    setUser({ id: finalId, role: finalRole, isLoggedIn: true });
   };
 
-  const logout = () => {
+  // ✅ دالة تسجيل الخروج (بتمسح الكوكي من السيرفر)
+  const logout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } catch {
+      // حتى لو فشل، منمسح من عندنا
+    }
     clearAuth();
-    setUser({ id: null, role: null, token: null, isLoggedIn: false });
+    setAccessToken(null);
+    setUser({ id: null, role: null, isLoggedIn: false });
     window.location.href = "/";
   };
 
@@ -50,11 +96,12 @@ export function AuthProvider({ children }) {
       user,
       login,
       logout,
+      bootstrapping,
       isAdmin: user.role === "Admin",
       isSupervisor: user.role === "Supervisor" || user.role === "Admin",
       isMember: user.role === "Member",
     }),
-    [user]
+    [user, bootstrapping]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,8 +1,7 @@
-const TOKEN_KEY = "token";
-const REFRESH_TOKEN_KEY = "refreshToken"; 
 const USER_ID_KEY = "userId";
 const ROLE_KEY = "role";
 
+// ✅ دالة فك تشفير JWT (باقية زي ما هي)
 export function decodeToken(token) {
   if (!token) return null;
   try {
@@ -37,30 +36,15 @@ export function getUserFromToken(token) {
   return { id: id ? String(id) : null, role: role || null };
 }
 
-export function saveAuth({ id, role, token, refreshToken }) {
-  localStorage.setItem(TOKEN_KEY, token);
-  if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken); 
+// ✅ حفظ بيانات المستخدم فقط (بدون توكن)
+export function saveUserData({ id, role }) {
   if (id) localStorage.setItem(USER_ID_KEY, String(id));
   if (role) localStorage.setItem(ROLE_KEY, role);
 }
 
 export function clearAuth() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_TOKEN_KEY); 
   localStorage.removeItem(USER_ID_KEY);
   localStorage.removeItem(ROLE_KEY);
-}
-
-export function isLoggedIn() {
-  return Boolean(localStorage.getItem(TOKEN_KEY));
-}
-
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function getRefreshToken() {
-  return localStorage.getItem(REFRESH_TOKEN_KEY); 
 }
 
 export function getUserId() {

@@ -60,114 +60,107 @@ export default function Signup() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    if (!form.firstName.trim()) {
-      setError("الرجاء إدخال الاسم الأول");
-      setLoading(false);
-      return;
+  // ... (كل الـ validation نفسه - خليه زي ما هو)
+  if (!form.firstName.trim()) { setError("الرجاء إدخال الاسم الأول"); setLoading(false); return; }
+  if (!form.lastName.trim()) { setError("الرجاء إدخال اسم العائلة"); setLoading(false); return; }
+  if (!form.username.trim()) { setError("الرجاء إدخال اسم المستخدم"); setLoading(false); return; }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!form.email.trim() || !emailRegex.test(form.email.trim())) {
+    setError("الرجاء إدخال بريد إلكتروني صحيح"); setLoading(false); return;
+  }
+
+  const phoneRegex = /^09\d{8}$/;
+  if (!form.phone.trim() || !phoneRegex.test(form.phone.trim())) {
+    setError("رقم الهاتف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام (مثال: 0912345678)");
+    setLoading(false); return;
+  }
+
+  if (form.password.length < 6) {
+    setError("كلمة المرور يجب أن تكون 6 أحرف على الأقل."); setLoading(false); return;
+  }
+
+  if (form.emergencyContactPhone.trim() && !phoneRegex.test(form.emergencyContactPhone.trim())) {
+    setError("رقم هاتف الطوارئ يجب أن يبدأ بـ 09 ويتكون من 10 أرقام");
+    setLoading(false); return;
+  }
+
+  try {
+    const payload = {
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      username: form.username.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      password: form.password,
+      has_Bike: form.has_Bike,
+      emergencyContactName: form.emergencyContactName.trim() || null,
+      emergencyContactPhone: form.emergencyContactPhone.trim() || null,
+    };
+
+    const registerRes = await api.post("/api/auth/register", payload);
+
+    if (registerRes.data?.success === false) {
+      throw new Error(registerRes.data?.message || "فشل إنشاء الحساب");
     }
-    if (!form.lastName.trim()) {
-      setError("الرجاء إدخال اسم العائلة");
-      setLoading(false);
-      return;
-    }
-    if (!form.username.trim()) {
-      setError("الرجاء إدخال اسم المستخدم");
-      setLoading(false);
-      return;
-    }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!form.email.trim() || !emailRegex.test(form.email.trim())) {
-      setError("الرجاء إدخال بريد إلكتروني صحيح");
-      setLoading(false);
-      return;
-    }
+    // ✅ بعد التسجيل، نسجل دخول تلقائي عشان ناخد accessToken
+    const loginBody = {
+      username: form.username.trim(),
+      email: "",
+      password: form.password,
+    };
 
-    const phoneRegex = /^09\d{8}$/;
-    if (!form.phone.trim() || !phoneRegex.test(form.phone.trim())) {
-      setError("رقم الهاتف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام (مثال: 0912345678)");
-      setLoading(false);
-      return;
-    }
+    const loginRes = await api.post("/api/auth/login", loginBody);
+    const loginPayload = loginRes.data?.data || {};
 
-    if (form.password.length < 6) {
-      setError("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
-      setLoading(false);
-      return;
+    // ✅ دعم شكلين للـ response
+    let id, role, accessToken;
+    if (loginPayload.accessToken) {
+      accessToken = loginPayload.accessToken;
+      id = loginPayload.id;
+      role = loginPayload.role;
+    } else if (loginPayload.token?.token) {
+      accessToken = loginPayload.token.token;
+      id = loginPayload.token.id;
+      role = loginPayload.token.role;
+    } else if (typeof loginPayload.token === "string") {
+      accessToken = loginPayload.token;
+      id = loginPayload.id;
+      role = loginPayload.role;
     }
 
-    if (form.emergencyContactPhone.trim() && !phoneRegex.test(form.emergencyContactPhone.trim())) {
-      setError("رقم هاتف الطوارئ يجب أن يبدأ بـ 09 ويتكون من 10 أرقام");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const payload = {
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        username: form.username.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim(),
-        password: form.password,
-        has_Bike: form.has_Bike,
-        emergencyContactName: form.emergencyContactName.trim() || null,
-        emergencyContactPhone: form.emergencyContactPhone.trim() || null,
-      };
-
-      const registerRes = await api.post("/api/auth/register", payload);
-
-      if (registerRes.data?.success === false) {
-        throw new Error(registerRes.data?.message || "فشل إنشاء الحساب");
-      }
-
-      const loginBody = {
-        username: form.username.trim(),
-        email: "",
-        password: form.password,
-      };
-
-      const loginRes = await api.post("/api/auth/login", loginBody);
-
-      const data = loginRes.data?.data?.token;
-
-      if (!data?.token) {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate("/login", { state: { registered: true } });
-        }, 1200);
-        return;
-      }
-
-      login({
-        id: data.id,
-        role: data.role,
-        token: data.token,
-        refreshToken: data.refreshToken,
-      });
-
+    if (!accessToken) {
+      // في حالة الفشل، روح للـ login
       setSuccess(true);
       setTimeout(() => {
-        navigate("/", { replace: true });
-      }, 800);
-    } catch (err) {
-      console.error("Signup Error:", err.response?.data || err);
-      const errorMsg =
-        err.response?.data?.message ||
-        (Array.isArray(err.response?.data?.errors) &&
-          err.response.data.errors[0]) ||
-        err.message ||
-        "حدث خطأ أثناء إنشاء الحساب. تأكد من البيانات وحاول مجدداً.";
-      setError(String(errorMsg));
-    } finally {
-      setLoading(false);
+        navigate("/login", { state: { registered: true } });
+      }, 1200);
+      return;
     }
-  };
+
+    login({ id, role, accessToken });
+    setSuccess(true);
+    setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 800);
+  } catch (err) {
+    console.error("Signup Error:", err.response?.data || err);
+    const errorMsg =
+      err.response?.data?.message ||
+      (Array.isArray(err.response?.data?.errors) && err.response.data.errors[0]) ||
+      err.message ||
+      "حدث خطأ أثناء إنشاء الحساب. تأكد من البيانات وحاول مجدداً.";
+    setError(String(errorMsg));
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>
